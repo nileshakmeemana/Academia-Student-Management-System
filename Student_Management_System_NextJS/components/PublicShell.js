@@ -38,7 +38,7 @@ export function PublicHeader() {
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-7 h-16 flex items-center gap-8">
         <Link href="/" aria-label={`${BRAND} home`}>
-          <BrandLogo />
+          <BrandLogo size="h-8" />
         </Link>
 
         <nav className="hidden min-[901px]:flex gap-1" aria-label="Primary">
@@ -132,8 +132,8 @@ export function AuthLayout({ title, subtitle, tabs, width = 'max-w-[360px]', chi
 
       <div className={cx('w-full', width)}>
         <div className="text-center">
-          <Link href="/" className="inline-flex" aria-label={`${BRAND} home`}>
-            <LogoMark size="w-8 h-8" />
+          <Link href="/" className="inline-flex justify-center" aria-label={`${BRAND} home`}>
+            <BrandLogo size="h-9" />
           </Link>
           <h1 className="mt-5 text-xl font-semibold tracking-[-0.01em] text-slate-900">{title}</h1>
           {subtitle && <p className="mt-2 text-sm leading-[22px] text-slate-600">{subtitle}</p>}

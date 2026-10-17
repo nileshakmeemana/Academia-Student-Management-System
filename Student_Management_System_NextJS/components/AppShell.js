@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { PageProvider, usePageContext } from './PageContext';
+import SessionGuard from './SessionGuard';
 import { Avatar, BrandLogo, Skeleton, btnClass, cx } from './ui';
 import { api } from '@/lib/api';
 
@@ -187,7 +188,7 @@ function Shell({ children }) {
       {/* Mobile header */}
       <div className="lg:hidden sticky top-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center justify-between pl-4 pr-3">
         <Link href={NAV[role]?.[0]?.href || '/'}>
-          <BrandLogo size="w-[25px] h-[25px]" className="text-sm" />
+          <BrandLogo size="h-[26px]" />
         </Link>
         <button
           type="button"
@@ -215,21 +216,21 @@ function Shell({ children }) {
           navOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
         )}
       >
-        {navOpen && (
-          <button
-            type="button"
-            onClick={() => setNavOpen(false)}
-            className="lg:hidden absolute top-3 -right-12 w-9 h-9 rounded-lg flex items-center justify-center text-white hover:bg-white/10"
-            aria-label="Close menu"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
-
         <div className="px-3.5">
-          <Link href={NAV[role]?.[0]?.href || '/'} className="flex pl-0.5">
-            <BrandLogo size="w-[25px] h-[25px]" className="text-sm" />
-          </Link>
+          <div className="flex items-center justify-between gap-2">
+            <Link href={NAV[role]?.[0]?.href || '/'} className="flex pl-0.5">
+              <BrandLogo size="h-[26px]" />
+            </Link>
+            {/* Close button (mobile only), inside the sidebar */}
+            <button
+              type="button"
+              onClick={() => setNavOpen(false)}
+              className="lg:hidden -my-1 -mr-1 w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
           <label className="mt-[18px] flex items-center gap-2 h-[35px] pl-[11px] pr-[7px] border border-slate-300 rounded-[7px] shadow-xs text-slate-500 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/[0.18] transition">
             <Search className="w-4 h-4 shrink-0" />
@@ -293,7 +294,7 @@ function Shell({ children }) {
                   <Link href="/profile" onClick={() => account.setOpen(false)} className={MENU_ITEM}>
                     <Settings className="w-4 h-4" />Profile &amp; settings
                   </Link>
-                  <button type="button" onClick={logout} className={MENU_ITEM}>
+                  <button type="button" onClick={() => logout()} className={MENU_ITEM}>
                     <LogOut className="w-4 h-4" />Sign out
                   </button>
                 </div>
@@ -403,6 +404,7 @@ export default function AppShell({ children }) {
   return (
     <PageProvider>
       <Shell>{children}</Shell>
+      <SessionGuard />
     </PageProvider>
   );
 }

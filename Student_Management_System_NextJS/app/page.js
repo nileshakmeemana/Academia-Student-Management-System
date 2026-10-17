@@ -3,7 +3,7 @@ import {
   ArrowDown, ArrowRight, BookOpen, CalendarCheck, ChartColumn, Check, CircleCheck, ClipboardCheck, House, Users,
 } from 'lucide-react';
 import { PublicFooter, PublicHeader } from '@/components/PublicShell';
-import { LogoMark, btnClass, cx } from '@/components/styles';
+import { btnClass, cx } from '@/components/styles';
 import { BRAND } from '@/lib/brand';
 
 // index.jsp content in the academia.html landing layout
@@ -74,7 +74,7 @@ function Preview() {
         <div className="grid min-[901px]:grid-cols-[184px_1fr] bg-white border border-slate-200 rounded-[10px] overflow-hidden min-h-[420px] text-left">
           <div className="hidden min-[901px]:block border-r border-slate-200 px-2.5 py-4">
             <div className="flex items-center gap-2 px-1.5 text-13 font-semibold text-slate-900">
-              <LogoMark size="w-[22px] h-[22px]" />{BRAND}
+              <img src="/Logo.png" alt={BRAND} className="h-[22px] w-auto object-contain" />
             </div>
             <div className="mt-[18px] grid gap-0.5">
               {PREVIEW_NAV.map(([Icon, label, on]) => (

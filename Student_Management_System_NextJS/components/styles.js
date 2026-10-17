@@ -4,20 +4,31 @@ import { BRAND } from '@/lib/brand';
 export const cx = (...c) => c.filter(Boolean).join(' ');
 
 /* ---------- brand ---------- */
-// The mockup's logo: white tile with a purple orb, plus the wordmark.
-export function LogoMark({ size = 'w-7 h-7' }) {
+// Brand logo using public/Logo.png (dimensions: 2208x456, ~4.84:1 aspect ratio)
+export function LogoMark({ size = 'h-7', className = '' }) {
+  const heightClass = size.includes('h-')
+    ? size.split(' ').find((s) => s.startsWith('h-')) || 'h-7'
+    : 'h-7';
   return (
-    <span className={cx('logo-mark', size)} aria-hidden="true">
-      <span />
-    </span>
+    <img
+      src="/Logo.png"
+      alt={BRAND}
+      className={cx(heightClass, 'w-auto object-contain shrink-0', className)}
+    />
   );
 }
 
-export function BrandLogo({ size = 'w-7 h-7', className = 'text-base' }) {
+export function BrandLogo({ size = 'h-7', className = '', imgClassName = '' }) {
+  const heightClass = size.includes('h-')
+    ? size.split(' ').find((s) => s.startsWith('h-')) || 'h-7'
+    : 'h-7';
   return (
-    <span className={cx('inline-flex items-center gap-2 font-semibold tracking-[-0.01em] text-slate-900', className)}>
-      <LogoMark size={size} />
-      {BRAND}
+    <span className={cx('inline-flex items-center shrink-0', className)}>
+      <img
+        src="/Logo.png"
+        alt={BRAND}
+        className={cx(heightClass, 'w-auto object-contain shrink-0', imgClassName)}
+      />
     </span>
   );
 }
@@ -44,6 +55,7 @@ const VARIANTS = {
   white: ['secondary', 'md'],
   outline: ['secondary', 'md'],
   ghost: ['ghost', 'md'],
+  danger: ['danger', 'md'],
   rowDark: ['primary', 'sm'],
   rowLight: ['secondary', 'sm'],
   rowDanger: ['danger', 'sm'],
