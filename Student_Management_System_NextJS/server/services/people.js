@@ -1,5 +1,6 @@
 const { User, Student, Teacher, Course, Enrollment, Grade, Attendance } = require('../models');
 const { HttpError, isBlank, clean, today, isDateString } = require('../utils/http');
+const { assertStrongPassword } = require('../utils/password');
 
 const GENDERS = ['Male', 'Female', 'Other'];
 
@@ -45,6 +46,7 @@ async function createAccount(body, role) {
   if (body.confirmPassword != null && body.password !== body.confirmPassword) {
     throw new HttpError(400, 'Passwords do not match');
   }
+  assertStrongPassword(password, { username, email });
   await assertUnique(username, email);
 
   const fields = role === 'admin' ? null : personalFields(body, role);

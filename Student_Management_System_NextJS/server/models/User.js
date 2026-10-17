@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, select: false },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true, maxlength: 100 },
     role: { type: String, enum: ['admin', 'teacher', 'student'], required: true },
+    // Bumped to sign out every session of this user (password change, "sign out everywhere").
+    sessionVersion: { type: Number, default: 0 },
+    // Account lockout after repeated failed sign-ins.
+    failedLogins: { type: Number, default: 0, select: false },
+    lockUntil: { type: Date, default: null, select: false },
+    lastLoginAt: { type: Date, default: null },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: false } }
 );
@@ -24,7 +30,13 @@ userSchema.pre('save', async function preSave(next) {
 });
 
 userSchema.methods.checkPassword = function checkPassword(plain) {
-  return bcrypt.compare(plain, this.password);
+  return bcrypt.compare(String(plain), this.password);
+};
+
+// Same work as a real check, so unknown usernames can't be detected by timing.
+const DUMMY_HASH = '$2a$10$8F4Kng8rzY2fpHHcaz5fP.ipaA4UGRW6bscRF3nr.9zMbJfWn.bEC';
+userSchema.statics.fakePasswordCheck = function fakePasswordCheck(plain) {
+  return bcrypt.compare(String(plain), DUMMY_HASH);
 };
 
 userSchema.methods.toSafeJSON = function toSafeJSON() {

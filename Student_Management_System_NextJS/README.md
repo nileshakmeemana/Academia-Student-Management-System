@@ -116,6 +116,23 @@ Inter, bordered cards and skeuomorphic buttons.
   from the mockup are not included because the app has no backend for them.
 - Brand name lives in `lib/brand.js`.
 
+## Security
+
+| Protection | How it works |
+|---|---|
+| **Idle timeout** | Signed out after `SESSION_IDLE_MINUTES` (default 30) without activity. Any request slides the deadline forward. Two minutes before it ends, an "Are you still there?" dialog offers *Stay signed in* / *Sign out*. All open tabs stay in sync and sign out together. |
+| **Absolute session limit** | Signed out `SESSION_MAX_HOURS` (default 12) after signing in, even when active. |
+| **Session revocation** | Each user has a `sessionVersion`. Changing the password signs out every other device; **Profile → Sign out of all devices** ends every session, including this one. Deleted or changed accounts are signed out on their next request. |
+| **Account lockout** | 5 failed sign-ins lock the account for 15 minutes (`LOGIN_MAX_ATTEMPTS`, `LOGIN_LOCK_MINUTES`). The last 2 attempts show a warning. |
+| **Rate limits** | Sign-in: 20 tries per IP per 15 minutes. Sign-up: 10 per IP per hour. Password/email changes: 10 per 15 minutes. Counted in MongoDB (`ratelimits`, auto-expiring), so they work across Vercel instances. |
+| **Passwords** | New passwords need 8+ characters with letters and numbers, and can't contain the username/email. Stored with bcrypt. Unknown usernames take the same time to reject as wrong passwords. Existing (demo) passwords keep working until changed. |
+| **Cookie** | `HttpOnly`, `SameSite=Lax`, `Secure` in production, JWT signed with HS256 only (`alg` is pinned). Lives only as long as the idle timeout. |
+| **CSRF** | Besides SameSite, every POST/PUT/DELETE must come from the same origin and be JSON (cross-site forms are rejected with 403/415). |
+| **Input** | MongoDB operators (`$gt`, `$where`, …) and dotted keys are stripped from request bodies and query strings; bodies are limited to 100 KB. |
+| **Headers** | Content-Security-Policy, `X-Frame-Options: DENY`, `nosniff`, strict Referrer-Policy, Permissions-Policy, COOP, HSTS on Vercel, no `X-Powered-By`; API responses are `Cache-Control: no-store`. |
+
+Use a long random `JWT_SECRET` (32+ characters) in production; the server logs a warning if it is shorter.
+
 ## Deploying to Vercel
 
 1. **Database** – use MongoDB Atlas (Vercel can't reach a MongoDB on your PC). In Atlas →
@@ -131,7 +148,7 @@ Inter, bordered cards and skeuomorphic buttons.
    |------------------|------------------------------------------|
    | `MONGO_URI`      | your Atlas `mongodb+srv://…` string      |
    | `JWT_SECRET`     | a long random string                     |
-   | `JWT_EXPIRES_IN` | `1d` (optional)                          |
+   | `SESSION_IDLE_MINUTES` | `30` (optional, see *Security*)     |
 
    Don't set `MONGO_DNS_SERVERS` or `NODE_ENV` on Vercel.
 4. **Deploy.** Check `https://<your-app>.vercel.app/api/health` returns `{"ok":true}`, then sign in.

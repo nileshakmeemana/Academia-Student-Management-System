@@ -7,4 +7,5 @@ module.exports = {
   Enrollment: require('./Enrollment'),
   Grade: require('./Grade'),
   Attendance: require('./Attendance'),
+  RateLimit: require('./RateLimit'),
 };

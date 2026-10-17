@@ -2,6 +2,10 @@ const router = require('express').Router();
 const { User, Student, Teacher } = require('../models');
 const { asyncHandler, HttpError, isBlank, clean } = require('../utils/http');
 const { personalFields, requireNames, studentOut, teacherOut } = require('../services/people');
+const { assertStrongPassword } = require('../utils/password');
+const { issueToken } = require('../middleware/auth');
+const { rateLimit } = require('../utils/rateLimit');
+const { PASSWORD_IP_LIMIT } = require('../config/security');
 
 async function profilePayload(user) {
   const payload = { user: user.toSafeJSON(), student: null, teacher: null };
@@ -42,20 +46,27 @@ router.put(
 
 router.put(
   '/password',
+  rateLimit('password', PASSWORD_IP_LIMIT, 'Too many password attempts.'),
   asyncHandler(async (req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     if ([currentPassword, newPassword, confirmPassword].some(isBlank)) throw new HttpError(400, 'All fields are required');
     if (newPassword !== confirmPassword) throw new HttpError(400, 'New passwords do not match');
     const user = await User.findById(req.user._id).select('+password');
     if (!(await user.checkPassword(currentPassword))) throw new HttpError(400, 'Current password is incorrect');
+    if (currentPassword === newPassword) throw new HttpError(400, 'Choose a password you have not used here before.');
+    assertStrongPassword(newPassword, { username: user.username, email: user.email });
     user.password = newPassword;
+    // Signs out every other device; this browser gets a fresh session below.
+    user.sessionVersion = (user.sessionVersion || 0) + 1;
     await user.save();
-    res.json({ message: 'Password changed successfully' });
+    issueToken(res, user);
+    res.json({ message: 'Password changed. Other devices have been signed out.' });
   })
 );
 
 router.put(
   '/email',
+  rateLimit('password', PASSWORD_IP_LIMIT, 'Too many password attempts.'),
   asyncHandler(async (req, res) => {
     const newEmail = clean(req.body.newEmail);
     const { password } = req.body;
