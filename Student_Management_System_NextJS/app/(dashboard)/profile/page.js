@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { BookOpen, KeyRound, Mail, Presentation, Save, ShieldCheck, UserRound, Users } from 'lucide-react';
+import { BookOpen, KeyRound, Mail, Presentation, Save, ShieldCheck, UserRound, Users, LogOut } from 'lucide-react';
 import Modal from '@/components/Modal';
 import PersonFields from '@/components/PersonFields';
 import { useAuth } from '@/components/AuthProvider';
@@ -16,7 +16,7 @@ const ROLE_LABEL = { admin: 'Administrator', teacher: 'Teacher', student: 'Stude
 
 export default function ProfilePage() {
   usePage({ title: 'User Profile', subtitle: 'Your sign-in details and personal information' });
-  const { setUser } = useAuth();
+  const { setUser, logout } = useAuth();
   const { data, loading, error, setData } = useLoad('/profile');
   const { ok } = useFlash();
   const [modal, setModal] = useState(null); // 'password' | 'email'
@@ -95,6 +95,9 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-2.5 pt-4">
               <Button variant="outline" onClick={() => open('password')}><KeyRound className="w-4 h-4" />Change Password</Button>
               <Button variant="outline" onClick={() => open('email')}><Mail className="w-4 h-4" />Update Email</Button>
+              <Button variant="danger" className="sm:col-span-2 lg:col-span-1 2xl:col-span-2" onClick={() => { if (window.confirm('Sign out of every device, including this one?')) logout('all'); }}>
+                <LogOut className="w-4 h-4" />Sign out of all devices
+              </Button>
             </div>
           </Card>
         </div>
@@ -144,7 +147,8 @@ export default function ProfilePage() {
             <input className={INPUT} type="password" id="currentPassword" name="currentPassword" required autoComplete="current-password" />
           </Field>
           <Field label="New Password" htmlFor="newPassword">
-            <input className={INPUT} type="password" id="newPassword" name="newPassword" required ref={newPw} onInput={checkMatch} autoComplete="new-password" />
+            <input className={INPUT} type="password" id="newPassword" name="newPassword" required minLength={8} maxLength={128} ref={newPw} onInput={checkMatch} autoComplete="new-password" />
+            <p className="text-13 text-slate-600 mt-1.5">At least 8 characters, with letters and numbers. Other devices will be signed out.</p>
           </Field>
           <Field label="Confirm New Password" htmlFor="confirmPassword">
             <input className={INPUT} type="password" id="confirmPassword" name="confirmPassword" required ref={confirmPw} onInput={checkMatch} autoComplete="new-password" />

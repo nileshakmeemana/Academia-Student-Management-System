@@ -23,7 +23,7 @@ export function StrengthMeter({ value }) {
         ))}
       </div>
       <div className="text-13 text-slate-600 mt-1.5">
-        {value ? `Strength: ${LABELS[score - 1] || 'Weak'}` : 'Use 8+ characters with a capital, a number and a symbol'}
+        {value ? `Strength: ${LABELS[score - 1] || 'Weak'}` : 'At least 8 characters, with letters and numbers'}
       </div>
     </>
   );
@@ -49,7 +49,7 @@ export default function AccountFields({ idPrefix = '' }) {
       </Field>
       <div>
         <Field label="Password" htmlFor={id('password')}>
-          <PasswordInput className={INPUT} id={id('password')} name="password" required autoComplete="new-password"
+          <PasswordInput className={INPUT} id={id('password')} name="password" required minLength={8} maxLength={128} autoComplete="new-password"
             value={pw} onChange={(e) => { setPw(e.target.value); check(e.target.value); }} placeholder="Create a password" />
         </Field>
         <StrengthMeter value={pw} />

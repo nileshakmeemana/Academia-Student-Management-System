@@ -2,17 +2,21 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { broadcastLogout, setExpiresAt } from '@/lib/session';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
   const [ready, setReady] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
-      const { user: me } = await api('/auth/me');
+      const { user: me, session: s } = await api('/auth/me');
       setUser(me);
+      setSession(s);
+      if (s?.expiresAt) setExpiresAt(s.expiresAt);
       return me;
     } catch {
       setUser(null);
@@ -26,16 +30,22 @@ export function AuthProvider({ children }) {
     refresh();
   }, [refresh]);
 
-  const logout = useCallback(async () => {
+  // reason: 'logout' (button), 'timeout' (idle), 'expired', 'all' (every device)
+  const logout = useCallback(async (reason = 'logout') => {
     try {
-      await api('/auth/logout', { method: 'POST' });
+      await api(reason === 'all' ? '/auth/logout-all' : '/auth/logout', { method: 'POST' });
+    } catch {
+      /* already signed out */
     } finally {
       setUser(null);
-      window.location.href = '/login?message=logout';
+      broadcastLogout(reason);
+      window.location.href = `/login?message=${reason}`;
     }
   }, []);
 
-  return <AuthContext.Provider value={{ user, setUser, ready, refresh, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, setUser, session, ready, refresh, logout }}>{children}</AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);

@@ -25,8 +25,15 @@ function LoginForm() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    const NOTICE = {
+      logout: ['You have been signed out.', 'info'],
+      all: ['You have been signed out on all devices.', 'info'],
+      timeout: ['You were signed out after a period of inactivity.', 'info'],
+      expired: ['Your session has expired. Please sign in again.', 'info'],
+      revoked: ['You were signed out because your password or account changed. Please sign in again.', 'error'],
+    };
     if (params.get('registered')) toast('Registration successful. Please login.', 'ok');
-    else if (params.get('message') === 'logout') toast('You have been signed out.', 'info');
+    else if (NOTICE[params.get('message')]) toast(...NOTICE[params.get('message')]);
   }, [params, toast]);
 
   async function onSubmit(e) {
