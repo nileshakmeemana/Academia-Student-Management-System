@@ -34,11 +34,11 @@ export default function PersonEditor({ role, id }) {
     }
   }
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="form" />;
   if (error) return <ErrorCard message={error} />;
 
   return (
-    <Card className="max-w-3xl">
+    <Card>
       <CardHeader icon={UserRound} title={`Edit ${Noun} Information`} subtitle={`Username: ${person.username}`}>
         <LinkButton variant="rowLight" href={back}><ArrowLeft className="w-4 h-4" />Back to list</LinkButton>
       </CardHeader>

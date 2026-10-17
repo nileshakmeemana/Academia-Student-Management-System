@@ -52,7 +52,7 @@ export default function CourseRegistrationPage() {
         <Card className="xl:col-span-8">
           <CardHeader icon={BookPlus} title="Available Courses" subtitle={data ? `${all.length} offered · ${enrolledCount} enrolled` : ''} />
           {loading && !data ? (
-            <Loading />
+            <Loading variant="rows" />
           ) : all.length === 0 ? (
             <Empty>No courses are offered yet. Check back after the administrator adds them.</Empty>
           ) : rows.length === 0 ? (

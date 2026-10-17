@@ -40,7 +40,7 @@ export default function ViewCoursesPage() {
           <LinkButton variant="pill" href="/student/course-registration"><BookPlus className="w-4 h-4" />Register for Courses</LinkButton>
         </CardHeader>
         {loading && !data ? (
-          <Loading />
+          <Loading variant="rows" />
         ) : all.length === 0 ? (
           <Empty>
             <span>You are not enrolled in any courses yet.</span>

@@ -71,7 +71,7 @@ export default function ProfilePage() {
   };
   const open = (name) => { setFormError(''); setModal(name); };
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="form" />;
   if (error) return <ErrorCard message={error} />;
 
   return (

@@ -52,7 +52,7 @@ function ManageGrades() {
   return (
     <>
       <ErrorCard message={courses.error} />
-      {courses.loading ? <Loading /> : courses.data && (
+      {courses.loading ? <Loading variant="picker" /> : courses.data && (
         <CoursePicker courses={courses.data.courses} selected={courseId} basePath="/teacher/manage-grades" />
       )}
 
@@ -117,7 +117,7 @@ function ManageGrades() {
 
 export default function ManageGradesPage() {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading variant="picker" />}>
       <ManageGrades />
     </Suspense>
   );

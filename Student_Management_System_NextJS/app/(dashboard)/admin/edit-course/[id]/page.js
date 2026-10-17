@@ -29,11 +29,11 @@ export default function EditCoursePage({ params }) {
     }
   }
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="form" />;
   if (error) return <ErrorCard message={error} />;
 
   return (
-    <Card className="max-w-3xl">
+    <Card>
       <CardHeader icon={BookOpen} title="Edit Course Information" subtitle={`Course ID ${course.id}`}>
         <LinkButton variant="rowLight" href="/admin/manage-courses"><ArrowLeft className="w-4 h-4" />Back to courses</LinkButton>
       </CardHeader>

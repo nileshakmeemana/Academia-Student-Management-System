@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { PageProvider, usePageContext } from './PageContext';
-import { Avatar, BrandLogo, Loading, btnClass, cx } from './ui';
+import { Avatar, BrandLogo, Skeleton, btnClass, cx } from './ui';
 import { api } from '@/lib/api';
 
 // Same menus as includes/header.jsp, as the flat sidebar list from academia.html.
@@ -66,8 +66,6 @@ const NOTICE_SOURCE = {
 const POPOVER = 'absolute z-50 bg-white rounded-xl border border-slate-200 shadow-lg p-1.5 text-sm';
 const MENU_ITEM = 'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-slate-700 font-medium hover:bg-slate-50 transition text-left [&_svg]:text-slate-400';
 
-const todayLabel = () => new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
 // Ref-based outside-click so popovers close reliably under the App Router.
 function usePopover() {
   const [open, setOpen] = useState(false);
@@ -88,6 +86,7 @@ function usePopover() {
 
 function Shell({ children }) {
   const { user, logout } = useAuth();
+  const role = user?.role;
   const { meta, query, setQuery } = usePageContext();
   const pathname = usePathname();
   const router = useRouter();
@@ -115,15 +114,15 @@ function Shell({ children }) {
 
   // Admin sidebar shows live record counts.
   useEffect(() => {
-    if (user.role !== 'admin') return;
+    if (role !== 'admin') return;
     api('/admin/dashboard').then(setCounts).catch(() => {});
-  }, [user.role, pathname]);
+  }, [role, pathname]);
 
   const loadNotices = useCallback(() => {
-    const [path, pick] = NOTICE_SOURCE[user.role] || [];
+    const [path, pick] = NOTICE_SOURCE[role] || [];
     if (!path || notices) return;
     api(path).then((d) => setNotices(pick(d))).catch(() => setNotices([]));
-  }, [user.role, notices]);
+  }, [role, notices]);
 
   useEffect(() => {
     loadNotices();
@@ -146,7 +145,7 @@ function Shell({ children }) {
   const pageSearch = Boolean(meta.search);
   const searchValue = pageSearch ? query : navFilter;
   const onSearch = (v) => (pageSearch ? setQuery(v) : setNavFilter(v));
-  const navItems = (NAV[user.role] || []).filter(
+  const navItems = (NAV[role] || []).filter(
     (i) => pageSearch || !navFilter.trim() || i.label.toLowerCase().includes(navFilter.trim().toLowerCase())
   );
   const isActive = (item) =>
@@ -187,7 +186,7 @@ function Shell({ children }) {
     <div className="min-h-screen bg-white">
       {/* Mobile header */}
       <div className="lg:hidden sticky top-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center justify-between pl-4 pr-3">
-        <Link href={NAV[user.role]?.[0]?.href || '/'}>
+        <Link href={NAV[role]?.[0]?.href || '/'}>
           <BrandLogo size="w-[25px] h-[25px]" className="text-sm" />
         </Link>
         <button
@@ -228,7 +227,7 @@ function Shell({ children }) {
         )}
 
         <div className="px-3.5">
-          <Link href={NAV[user.role]?.[0]?.href || '/'} className="flex pl-0.5">
+          <Link href={NAV[role]?.[0]?.href || '/'} className="flex pl-0.5">
             <BrandLogo size="w-[25px] h-[25px]" className="text-sm" />
           </Link>
 
@@ -248,55 +247,82 @@ function Shell({ children }) {
         </div>
 
         <nav className="mt-[18px] px-[11px] flex flex-col gap-0.5 overflow-y-auto">
-          {navItems.map(navLink)}
-          {navItems.length === 0 && <div className="px-3 py-2 text-sm text-slate-500">No matches</div>}
+          {!user
+            ? [0, 1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3 px-3 py-[9px]">
+                  <Skeleton className="w-5 h-5 rounded-md shrink-0" />
+                  <Skeleton className={cx('h-3.5', ['w-24', 'w-20', 'w-28', 'w-16'][i])} />
+                </div>
+              ))
+            : navItems.map(navLink)}
+          {user && navItems.length === 0 && <div className="px-3 py-2 text-sm text-slate-500">No matches</div>}
         </nav>
 
         <div className="mt-auto px-[11px] pt-4">
           <div className="flex flex-col gap-0.5 mb-[18px]">{FOOT_NAV.map(navLink)}</div>
 
           {/* Account card */}
-          <div className="relative" ref={account.ref}>
-            <button
-              type="button"
-              onClick={() => { const o = !account.open; closeAll(); account.setOpen(o); }}
-              className="w-full flex items-center gap-[11px] p-[11px] pr-8 border border-slate-200 rounded-[11px] text-left hover:bg-slate-50 transition relative"
-              aria-expanded={account.open}
-              aria-label="Account menu"
-            >
-              <Avatar name={user.username} size="w-[35px] h-[35px] text-13" online />
-              <span className="min-w-0 flex-1">
-                <span className="block text-13 font-semibold text-slate-900 truncate">{user.username}</span>
-                <span className="block text-13 text-slate-600 truncate">{user.email}</span>
-              </span>
-              <ChevronsUpDown className="absolute top-3 right-2.5 w-4 h-4 text-slate-400" />
-            </button>
-            {account.open && (
-              <div className={cx(POPOVER, 'bottom-full mb-2 left-0 right-0')}>
-                <div className="px-2.5 py-2">
-                  <div className="font-semibold text-slate-900 truncate">{user.username}</div>
-                  <div className="text-13 text-slate-600">{ROLE_LABEL[user.role]}</div>
+          {!user ? (
+            <div className="flex items-center gap-[11px] p-[11px] border border-slate-200 rounded-[11px]">
+              <Skeleton className="w-[35px] h-[35px] rounded-full shrink-0" />
+              <div className="flex-1 space-y-2"><Skeleton className="h-3 w-16" /><Skeleton className="h-3 w-28" /></div>
+            </div>
+          ) : (
+            <div className="relative" ref={account.ref}>
+              <button
+                type="button"
+                onClick={() => { const o = !account.open; closeAll(); account.setOpen(o); }}
+                className="w-full flex items-center gap-[11px] p-[11px] pr-8 border border-slate-200 rounded-[11px] text-left hover:bg-slate-50 transition relative"
+                aria-expanded={account.open}
+                aria-label="Account menu"
+              >
+                <Avatar name={user.username} size="w-[35px] h-[35px] text-13" online />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-13 font-semibold text-slate-900 truncate">{user.username}</span>
+                  <span className="block text-13 text-slate-600 truncate">{user.email}</span>
+                </span>
+                <ChevronsUpDown className="absolute top-3 right-2.5 w-4 h-4 text-slate-400" />
+              </button>
+              {account.open && (
+                <div className={cx(POPOVER, 'bottom-full mb-2 left-0 right-0')}>
+                  <div className="px-2.5 py-2">
+                    <div className="font-semibold text-slate-900 truncate">{user.username}</div>
+                    <div className="text-13 text-slate-600">{ROLE_LABEL[user.role]}</div>
+                  </div>
+                  <div className="h-px bg-slate-200 my-1 -mx-1.5" />
+                  <Link href="/profile" onClick={() => account.setOpen(false)} className={MENU_ITEM}>
+                    <Settings className="w-4 h-4" />Profile &amp; settings
+                  </Link>
+                  <button type="button" onClick={logout} className={MENU_ITEM}>
+                    <LogOut className="w-4 h-4" />Sign out
+                  </button>
                 </div>
-                <div className="h-px bg-slate-200 my-1 -mx-1.5" />
-                <Link href="/profile" onClick={() => account.setOpen(false)} className={MENU_ITEM}>
-                  <Settings className="w-4 h-4" />Profile &amp; settings
-                </Link>
-                <button type="button" onClick={logout} className={MENU_ITEM}>
-                  <LogOut className="w-4 h-4" />Sign out
-                </button>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </aside>
 
       {/* Main */}
       <main className="lg:ml-[228px] min-w-0 px-4 pt-5 pb-9 sm:px-7 sm:pt-7 sm:pb-11 lg:pl-[30px]">
-        <div className="max-w-[1138px] space-y-6 lg:space-y-8">
+        <div className="space-y-6 lg:space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-semibold tracking-[-0.01em] text-slate-900">{meta.title || 'Dashboard'}</h1>
-              <p className="text-sm text-slate-600 mt-1">{meta.subtitle || todayLabel()}</p>
+              {meta.title ? (
+                <>
+                  <h1 className="text-lg sm:text-xl font-semibold tracking-[-0.01em] text-slate-900">{meta.title}</h1>
+                  {meta.subtitle ? (
+                    <p className="text-sm text-slate-600 mt-1">{meta.subtitle}</p>
+                  ) : (
+                    <Skeleton className="h-3.5 w-60 max-w-full mt-2" />
+                  )}
+                </>
+              ) : (
+                <div className="space-y-2.5 py-1" aria-hidden="true">
+                  <Skeleton className="h-6 w-44" />
+                  <Skeleton className="h-3.5 w-72 max-w-full" />
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-2.5 shrink-0">
@@ -314,10 +340,12 @@ function Shell({ children }) {
                 </button>
                 {bell.open && (
                   <div className={cx(POPOVER, 'left-0 sm:left-auto sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)]')}>
-                    <div className="px-2.5 py-2 font-semibold text-slate-900">Notices for {ROLE_LABEL[user.role].toLowerCase()}s</div>
+                    <div className="px-2.5 py-2 font-semibold text-slate-900">Notices for {(ROLE_LABEL[role] || 'user').toLowerCase()}s</div>
                     <div className="h-px bg-slate-200 my-1 -mx-1.5" />
                     {notices === null ? (
-                      <div className="px-2.5 py-2 text-slate-500">Loading…</div>
+                      <div className="px-2.5 py-2 space-y-2.5" aria-label="Loading notices">
+                        <Skeleton className="h-3.5 w-4/5" /><Skeleton className="h-3.5 w-3/5" /><Skeleton className="h-3.5 w-2/3" />
+                      </div>
                     ) : notices.length === 0 ? (
                       <div className="px-2.5 py-2 text-slate-500">No notices right now.</div>
                     ) : (
@@ -340,7 +368,8 @@ function Shell({ children }) {
                 <button
                   type="button"
                   onClick={() => { const o = !newMenu.open; closeAll(); newMenu.setOpen(o); }}
-                  className={btnClass('primary')}
+                  className={cx(btnClass('primary'), 'disabled:opacity-60')}
+                  disabled={!user}
                   aria-expanded={newMenu.open}
                 >
                   <Plus className="w-4 h-4" strokeWidth={2.25} />
@@ -349,7 +378,7 @@ function Shell({ children }) {
                 </button>
                 {newMenu.open && (
                   <div className={cx(POPOVER, 'left-0 sm:left-auto sm:right-0 mt-2 w-56')}>
-                    {(NEW_ACTIONS[user.role] || []).map(({ href, label, icon: Icon }) => (
+                    {(NEW_ACTIONS[role] || []).map(({ href, label, icon: Icon }) => (
                       <button key={href} type="button" onClick={() => { newMenu.setOpen(false); router.push(href); }} className={MENU_ITEM}>
                         <Icon className="w-4 h-4" />
                         <span>{label}</span>
@@ -368,9 +397,9 @@ function Shell({ children }) {
   );
 }
 
+// The shell renders straight away: the sidebar shows skeletons until the session
+// loads, while the page fetches its own data in parallel.
 export default function AppShell({ children }) {
-  const { user, ready } = useAuth();
-  if (!ready || !user) return <Loading label="Checking your session…" />;
   return (
     <PageProvider>
       <Shell>{children}</Shell>

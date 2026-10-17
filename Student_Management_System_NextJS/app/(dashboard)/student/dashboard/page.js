@@ -13,7 +13,7 @@ export default function StudentDashboard() {
   const s = data?.student;
   usePage({ title: 'Dashboard', subtitle: s ? `Welcome back, ${s.firstName} ${s.lastName}` : '' });
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="dashboard" />;
   if (error) return <ErrorCard message={error} />;
 
   const totalCredits = data.courses.reduce((n, c) => n + (Number(c.creditHours) || 0), 0);

@@ -13,7 +13,7 @@ export default function TeacherDashboard() {
   const t = data?.teacher;
   usePage({ title: 'Dashboard', subtitle: t ? `Welcome back, ${t.firstName} ${t.lastName}` : '' });
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="dashboard" />;
   if (error) return <ErrorCard message={error} />;
 
   const totalStudents = data.courses.reduce((n, c) => n + c.enrolledCount, 0);

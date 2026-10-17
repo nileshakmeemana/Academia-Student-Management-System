@@ -69,7 +69,7 @@ export default function ManageCoursesPage() {
           </Button>
         </CardHeader>
         {loading && !data ? (
-          <Loading />
+          <Loading variant="rows" />
         ) : rows.length === 0 ? (
           <Empty>{query ? `No courses match “${query}”.` : 'No courses yet. Add the first one with “Add New Course”.'}</Empty>
         ) : (

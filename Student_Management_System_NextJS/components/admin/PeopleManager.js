@@ -104,7 +104,7 @@ export default function PeopleManager({ role }) {
           </Button>
         </CardHeader>
         {loading && !data ? (
-          <Loading />
+          <Loading variant="rows" />
         ) : rows.length === 0 ? (
           <Empty>{query ? `No ${cfg.noun}s match “${query}”.` : `No ${cfg.noun}s yet. Add the first one with “Add New ${cfg.Noun}”.`}</Empty>
         ) : (

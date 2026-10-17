@@ -5,7 +5,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, LoaderCircle } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useToast } from './Toast';
 
@@ -415,11 +415,160 @@ export function Field({ label, htmlFor, className, hint, required = false, child
 }
 
 /* ---------- states ---------- */
-export function Loading({ label = 'Loading…' }) {
+/* ---------- skeleton loading ---------- */
+export function Skeleton({ className, style }) {
+  const round = /\brounded(-|\b)/.test(className || '') ? '' : 'rounded-md';
+  return <div className={cx('animate-pulse bg-slate-200/70', round, className)} style={style} aria-hidden="true" />;
+}
+
+const lineWidths = ['w-3/5', 'w-2/5', 'w-1/2', 'w-2/3', 'w-1/3'];
+
+// Table rows (full-bleed, used inside a Card under its header)
+const BLEED = '-mx-5 sm:-mx-6 last:-mb-5 sm:last:-mb-6 [.card-head+&]:-mt-5';
+function RowsSkeleton({ rows = 4, cols = 5, bleed = true }) {
   return (
-    <div className="flex items-center justify-center gap-2 py-16 text-sm text-slate-500">
-      <LoaderCircle className="w-4 h-4 animate-spin text-brand-600" />
-      {label}
+    <div className={bleed ? BLEED : undefined}>
+      <div className="h-11 bg-slate-50 border-b border-slate-200 px-5 sm:px-6 flex items-center gap-6">
+        {Array.from({ length: cols }).map((_, i) => <Skeleton key={i} className="h-3 w-16" />)}
+      </div>
+      <div className="divide-y divide-slate-200">
+        {Array.from({ length: rows }).map((_, r) => (
+          <div key={r} className="px-5 sm:px-6 py-4 flex items-center gap-4">
+            <Skeleton className="w-9 h-9 rounded-full shrink-0" />
+            <div className="flex-1 space-y-2 min-w-0">
+              <Skeleton className={cx('h-3.5', lineWidths[r % lineWidths.length])} />
+              <Skeleton className="h-3 w-1/4" />
+            </div>
+            <Skeleton className="hidden sm:block h-3.5 w-24" />
+            <Skeleton className="hidden md:block h-3.5 w-20" />
+            <Skeleton className="h-8 w-20 rounded-md" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CardHeadSkeleton({ action = false }) {
+  return (
+    <div className="card-head -mx-5 sm:-mx-6 -mt-5 sm:-mt-6 mb-5 px-5 sm:px-6 py-4 sm:py-5 border-b border-slate-200 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <Skeleton className="w-10 h-10 rounded-lg shrink-0" />
+        <div className="space-y-2 flex-1 max-w-xs">
+          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-3 w-1/3" />
+        </div>
+      </div>
+      {action && <Skeleton className="h-10 w-36 rounded-lg" />}
+    </div>
+  );
+}
+
+function FieldsSkeleton({ fields = 6 }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-[18px]">
+      {Array.from({ length: fields }).map((_, i) => (
+        <div key={i} className={cx('space-y-2', i >= fields - 2 && 'sm:col-span-2')}>
+          <Skeleton className="h-3.5 w-24" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MetricSkeleton({ big = false }) {
+  return (
+    <div className="space-y-2.5">
+      <Skeleton className="h-3 w-24" />
+      <Skeleton className={big ? 'h-9 w-20' : 'h-7 w-14'} />
+    </div>
+  );
+}
+
+/*
+ * Skeleton placeholders shaped like the content that is loading.
+ *   rows       table rows inside a Card (under its CardHeader)
+ *   page       a card with a header and table rows (default)
+ *   form       a card with a header and form fields
+ *   picker     the "Select course" card
+ *   stats      KPI cards + a table card
+ *   dashboard  overview metric/chart/stats + action cards + table
+ */
+export function Loading({ variant = 'page', label = 'Loading…' }) {
+  let body;
+  if (variant === 'rows') {
+    return (
+      <div role="status" aria-live="polite" aria-busy="true" className={BLEED}>
+        <span className="sr-only">{label}</span>
+        <RowsSkeleton bleed={false} />
+      </div>
+    );
+  }
+  if (variant === 'form') {
+    body = (
+      <Card>
+        <CardHeadSkeleton action />
+        <FieldsSkeleton />
+        <div className="flex justify-end gap-2.5 pt-6"><Skeleton className="h-10 w-24 rounded-lg" /><Skeleton className="h-10 w-32 rounded-lg" /></div>
+      </Card>
+    );
+  } else if (variant === 'picker') {
+    body = (
+      <Card>
+        <CardHeadSkeleton />
+        <div className="max-w-md space-y-2"><Skeleton className="h-3.5 w-16" /><Skeleton className="h-10 w-full rounded-lg" /></div>
+      </Card>
+    );
+  } else if (variant === 'stats') {
+    body = (
+      <div className="space-y-6 lg:space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="rounded-xl border border-slate-200 shadow-xs p-5 flex justify-between"><MetricSkeleton /><Skeleton className="w-9 h-9 rounded-lg" /></div>
+          ))}
+        </div>
+        <Card><CardHeadSkeleton /><RowsSkeleton rows={3} cols={7} /></Card>
+      </div>
+    );
+  } else if (variant === 'dashboard') {
+    body = (
+      <div className="space-y-6 lg:space-y-8">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_224px] gap-6 xl:gap-7">
+          <div className="grid grid-cols-1 md:grid-cols-[176px_minmax(0,1fr)] gap-5 md:gap-7">
+            <div className="space-y-5"><MetricSkeleton big /><MetricSkeleton /></div>
+            <div>
+              <Skeleton className="h-3 w-32 mb-4" />
+              <div className="h-48 flex items-end justify-around gap-3 border-b border-slate-100">
+                {[45, 80, 60, 95, 35, 70].map((h, i) => <Skeleton key={i} className="flex-1 max-w-[56px] rounded-b-none" style={{ height: `${h}%` }} />)}
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 xl:grid-cols-1 gap-5 content-start"><MetricSkeleton /><MetricSkeleton /><MetricSkeleton /></div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+          {[0, 1].map((i) => (
+            <div key={i} className="flex items-center gap-3.5 p-4 rounded-xl border border-slate-200 shadow-xs">
+              <Skeleton className="w-[42px] h-[42px] rounded-lg shrink-0" />
+              <div className="flex-1 space-y-2"><Skeleton className="h-3.5 w-1/3" /><Skeleton className="h-3 w-1/2" /></div>
+            </div>
+          ))}
+        </div>
+        <Card><CardHeadSkeleton /><RowsSkeleton rows={3} cols={4} /></Card>
+      </div>
+    );
+  } else {
+    body = (
+      <Card>
+        <CardHeadSkeleton action />
+        <RowsSkeleton />
+      </Card>
+    );
+  }
+  return (
+    <div role="status" aria-live="polite" aria-busy="true">
+      <span className="sr-only">{label}</span>
+      {body}
     </div>
   );
 }

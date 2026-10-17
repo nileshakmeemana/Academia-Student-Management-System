@@ -19,7 +19,7 @@ export default function ViewGradesPage() {
   usePage({ title: 'My Grades', subtitle: 'Scores, grade points and credits for every course you are enrolled in' });
   const { data, loading, error } = useLoad('/student/grades');
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="stats" />;
   if (error) return <ErrorCard message={error} />;
 
   const courses = data.courses;

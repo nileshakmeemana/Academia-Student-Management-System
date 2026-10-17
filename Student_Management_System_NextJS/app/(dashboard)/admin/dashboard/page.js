@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   usePage({ title: 'Dashboard', subtitle: 'Students, teachers and courses across the institution' });
   const { data, loading, error } = useLoad('/admin/dashboard');
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="dashboard" />;
   if (error) return <ErrorCard message={error} />;
 
   const courses = data.courses || [];
