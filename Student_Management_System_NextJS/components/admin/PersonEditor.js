@@ -40,14 +40,14 @@ export default function PersonEditor({ role, id }) {
   return (
     <Card className="max-w-3xl">
       <CardHeader icon={UserRound} title={`Edit ${Noun} Information`} subtitle={`Username: ${person.username}`}>
-        <LinkButton variant="rowLight" href={back}><ArrowLeft className="w-3 h-3" />Back to list</LinkButton>
+        <LinkButton variant="rowLight" href={back}><ArrowLeft className="w-4 h-4" />Back to list</LinkButton>
       </CardHeader>
       <form onSubmit={onSubmit} className="space-y-4">
         <FormError message={formError} />
         <PersonFields value={person} role={role} withEmail />
         <div className="flex flex-wrap justify-end gap-2.5 pt-2">
           <LinkButton variant="outline" href={back}>Cancel</LinkButton>
-          <Button variant="dark" type="submit" disabled={busy}><Save className="w-3.5 h-3.5" />{busy ? 'Saving…' : `Update ${Noun}`}</Button>
+          <Button variant="dark" type="submit" disabled={busy}><Save className="w-4 h-4" />{busy ? 'Saving…' : `Update ${Noun}`}</Button>
         </div>
       </form>
     </Card>

@@ -100,7 +100,7 @@ export default function PeopleManager({ role }) {
       <Card>
         <CardHeader icon={cfg.icon} title={`${cfg.Noun} List`} subtitle={data ? `${all.length} total${query ? ` · ${rows.length} matching` : ''}` : ''}>
           <Button variant="pill" onClick={() => { setFormError(''); setAdding(true); }}>
-            <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />Add New {cfg.Noun}
+            <Plus className="w-4 h-4" strokeWidth={2.25} />Add New {cfg.Noun}
           </Button>
         </CardHeader>
         {loading && !data ? (
@@ -119,8 +119,8 @@ export default function PeopleManager({ role }) {
                 ))}
                 <Td right>
                   <RowActions>
-                    <LinkButton variant="rowLight" href={cfg.editHref(r._id)}><Pencil className="w-3 h-3" />Edit</LinkButton>
-                    <Button variant="rowDanger" onClick={() => onDelete(r)}><Trash2 className="w-3 h-3" />Delete</Button>
+                    <LinkButton variant="rowLight" href={cfg.editHref(r._id)}><Pencil className="w-4 h-4" />Edit</LinkButton>
+                    <Button variant="rowDanger" onClick={() => onDelete(r)}><Trash2 className="w-4 h-4" />Delete</Button>
                   </RowActions>
                 </Td>
               </Tr>
@@ -134,12 +134,12 @@ export default function PeopleManager({ role }) {
           <FormError message={formError} />
           <AccountFields idPrefix="add-" />
           <div className="pt-2 space-y-4">
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{cfg.Noun} details</div>
+            <div className="text-sm font-semibold text-slate-900 pb-2 border-b border-slate-200">{cfg.Noun} details</div>
             <PersonFields role={role} idPrefix="add-p-" />
           </div>
           <div className="grid grid-cols-2 gap-2.5 pt-2">
             <Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button>
-            <Button variant="dark" type="submit" disabled={busy}><UserPlus className="w-3.5 h-3.5" />{busy ? 'Adding…' : `Add ${cfg.Noun}`}</Button>
+            <Button variant="dark" type="submit" disabled={busy}><UserPlus className="w-4 h-4" />{busy ? 'Adding…' : `Add ${cfg.Noun}`}</Button>
           </div>
         </form>
       </Modal>

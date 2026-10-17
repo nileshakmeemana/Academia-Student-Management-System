@@ -1,14 +1,14 @@
 'use client';
 
-import { BellRing, BookOpen, ChartColumn, LayoutGrid, Presentation, UserCheck, Users } from 'lucide-react';
+import { BellRing, BookOpen, Presentation, Users } from 'lucide-react';
 import { usePage } from '@/components/PageContext';
 import {
-  BarChart, Card, CardHeader, DarkLinks, Empty, ErrorCard, Kpi, KpiGrid, LinkButton, ListRow, Loading, MiniStat,
-  Table, Td, TeacherCell, Tr, useLoad,
+  ActionCards, BarChart, Card, CardHeader, ContentGrid, Empty, ErrorCard, LinkButton, ListRow, Loading, Metric,
+  Overview, SectionHead, SideTitle, Table, Td, TeacherCell, Tr, useLoad,
 } from '@/components/ui';
 
 export default function AdminDashboard() {
-  usePage({ title: 'Admin Dashboard', subtitle: 'Students, teachers and courses across the institution' });
+  usePage({ title: 'Dashboard', subtitle: 'Students, teachers and courses across the institution' });
   const { data, loading, error } = useLoad('/admin/dashboard');
 
   if (loading) return <Loading />;
@@ -20,71 +20,81 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <KpiGrid>
-        <Kpi icon={Users} label="Students" value={data.studentCount} />
-        <Kpi icon={Presentation} label="Teachers" value={data.teacherCount} />
-        <Kpi icon={BookOpen} label="Courses" value={data.courseCount} />
-        <Kpi icon={UserCheck} label="Enrollments" value={data.enrollmentCount} />
-      </KpiGrid>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <Card className="lg:col-span-7">
-          <CardHeader icon={BookOpen} title="Courses at a glance" subtitle={`${courses.length} courses · ${unassigned} without a teacher`}>
-            <LinkButton variant="rowLight" href="/admin/manage-courses">Manage</LinkButton>
-          </CardHeader>
-          {courses.length === 0 ? (
-            <Empty>No courses yet.</Empty>
-          ) : (
-            <Table head={['Course', 'Teacher', 'Credit Hours', { label: 'Students', right: true }]} minWidth={480}>
-              {courses.map((c) => (
-                <Tr key={c._id}>
-                  <Td>
-                    <div className="font-semibold text-slate-900">{c.code}</div>
-                    <div className="text-[10px] text-slate-400 truncate max-w-[220px]">{c.name}</div>
-                  </Td>
-                  <Td><TeacherCell name={c.teacherName} /></Td>
-                  <Td>{c.creditHours}</Td>
-                  <Td right className="font-semibold text-slate-700">{c.enrolledCount}</Td>
-                </Tr>
-              ))}
-            </Table>
-          )}
-        </Card>
-
-        <Card className="lg:col-span-5">
-          <CardHeader icon={ChartColumn} title="Students per course" subtitle="Enrollment count by course code" />
-          <div className="grid grid-cols-3 gap-2 pb-3">
-            <MiniStat value={avg} label="Avg. per course" />
-            <MiniStat value={unassigned} label="Unassigned courses" tone={unassigned ? 'text-amber-700' : 'text-emerald-700'} />
-            <MiniStat value={data.enrollmentCount} label="Enrollments" />
+      <Overview
+        metric={
+          <div className="grid grid-cols-3 md:grid-cols-1 gap-4 md:gap-5">
+            <Metric label="Enrollments" value={data.enrollmentCount} />
+            <Metric label="Avg. per course" value={avg} size="md" />
+            <Metric label="Unassigned courses" value={unassigned} size="md" />
           </div>
-          <BarChart bars={courses.slice(0, 8).map((c) => ({ label: c.code, value: c.enrolledCount }))} emptyLabel="No enrollments yet." />
-        </Card>
-      </div>
+        }
+        chart={
+          <div>
+            <div className="text-13 font-medium text-slate-600 mb-3">Students per course</div>
+            <BarChart bars={courses.slice(0, 10).map((c) => ({ label: c.code, value: c.enrolledCount }))} emptyLabel="No enrollments yet." />
+          </div>
+        }
+        stats={[
+          { label: 'Total students', value: data.studentCount },
+          { label: 'Teachers', value: data.teacherCount },
+          { label: 'Courses', value: data.courseCount },
+        ]}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-        <div className="md:col-span-5">
-          <DarkLinks
-            icon={LayoutGrid}
-            title="Management"
-            items={[
-              { href: '/admin/manage-students', label: 'Manage Students', sub: 'Student records, enrollments, and information.', icon: Users },
-              { href: '/admin/manage-teachers', label: 'Manage Teachers', sub: 'Teacher records, assignments, and information.', icon: Presentation },
-              { href: '/admin/manage-courses', label: 'Manage Courses', sub: 'Course details, assignments, and schedules.', icon: BookOpen },
-            ]}
-          />
-        </div>
-        <Card className="md:col-span-7">
-          <CardHeader icon={BellRing} title="Notices for Administrator" subtitle="Things you can do here" />
-          {data.recentActivities?.length ? (
-            <div className="space-y-1">
-              {data.recentActivities.map((a) => <ListRow key={a} icon={BellRing} title={a} />)}
+      <ContentGrid
+        main={
+          <>
+            <div>
+              <SectionHead title="Manage records" />
+              <div className="mt-5">
+                <ActionCards
+                  cols="sm:grid-cols-2 2xl:grid-cols-3"
+                  items={[
+                    { href: '/admin/manage-students', label: 'Manage students', sub: 'Records, enrollments and details', icon: Users },
+                    { href: '/admin/manage-teachers', label: 'Manage teachers', sub: 'Records, assignments and details', icon: Presentation },
+                    { href: '/admin/manage-courses', label: 'Manage courses', sub: 'Details and assigned teachers', icon: BookOpen },
+                  ]}
+                />
+              </div>
             </div>
-          ) : (
-            <Empty>No recent activities</Empty>
-          )}
-        </Card>
-      </div>
+
+            <Card>
+              <CardHeader title="Courses at a glance" subtitle={`${courses.length} course${courses.length === 1 ? '' : 's'} · ${unassigned} without a teacher`}>
+                <LinkButton variant="rowLight" href="/admin/manage-courses">Manage</LinkButton>
+              </CardHeader>
+              {courses.length === 0 ? (
+                <Empty>No courses yet.</Empty>
+              ) : (
+                <Table head={['Course', 'Teacher', 'Credit hours', { label: 'Students', right: true }]} minWidth={520}>
+                  {courses.map((c) => (
+                    <Tr key={c._id}>
+                      <Td>
+                        <div className="font-medium text-slate-900">{c.code}</div>
+                        <div className="text-slate-600 truncate max-w-[260px]">{c.name}</div>
+                      </Td>
+                      <Td><TeacherCell name={c.teacherName} /></Td>
+                      <Td className="tabular-nums">{c.creditHours}</Td>
+                      <Td right className="font-medium text-slate-900 tabular-nums">{c.enrolledCount}</Td>
+                    </Tr>
+                  ))}
+                </Table>
+              )}
+            </Card>
+          </>
+        }
+        side={
+          <div>
+            <SideTitle>Notices for administrators</SideTitle>
+            <div className="mt-4 space-y-2">
+              {data.recentActivities?.length ? (
+                data.recentActivities.map((a) => <ListRow key={a} icon={BellRing} title={a} />)
+              ) : (
+                <p className="text-sm text-slate-600">No recent activities.</p>
+              )}
+            </div>
+          </div>
+        }
+      />
     </>
   );
 }

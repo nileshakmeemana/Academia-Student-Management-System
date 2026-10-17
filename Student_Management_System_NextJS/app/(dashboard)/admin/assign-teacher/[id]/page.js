@@ -36,7 +36,7 @@ export default function AssignTeacherPage({ params }) {
   return (
     <Card className="max-w-xl">
       <CardHeader icon={UserCheck} title={`Assign Teacher to ${course.code}`} subtitle={course.name}>
-        <LinkButton variant="rowLight" href="/admin/manage-courses"><ArrowLeft className="w-3 h-3" />Back</LinkButton>
+        <LinkButton variant="rowLight" href="/admin/manage-courses"><ArrowLeft className="w-4 h-4" />Back</LinkButton>
       </CardHeader>
       <form onSubmit={onSubmit} className="space-y-4">
         <FormError message={formError} />
@@ -49,7 +49,7 @@ export default function AssignTeacherPage({ params }) {
         </Field>
         <div className="grid grid-cols-2 gap-2.5 pt-2">
           <LinkButton variant="outline" href="/admin/manage-courses">Cancel</LinkButton>
-          <Button variant="dark" type="submit" disabled={busy}><UserCheck className="w-3.5 h-3.5" />{busy ? 'Saving…' : 'Assign Teacher'}</Button>
+          <Button variant="dark" type="submit" disabled={busy}><UserCheck className="w-4 h-4" />{busy ? 'Saving…' : 'Assign Teacher'}</Button>
         </div>
       </form>
     </Card>

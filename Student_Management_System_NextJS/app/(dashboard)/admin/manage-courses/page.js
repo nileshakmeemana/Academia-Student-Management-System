@@ -65,7 +65,7 @@ export default function ManageCoursesPage() {
       <Card>
         <CardHeader icon={BookOpen} title="Course List" subtitle={data ? `${all.length} total${query ? ` · ${rows.length} matching` : ''}` : ''}>
           <Button variant="pill" onClick={() => { setFormError(''); setAdding(true); }}>
-            <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />Add New Course
+            <Plus className="w-4 h-4" strokeWidth={2.25} />Add New Course
           </Button>
         </CardHeader>
         {loading && !data ? (
@@ -77,15 +77,15 @@ export default function ManageCoursesPage() {
             {rows.map((c) => (
               <Tr key={c._id}>
                 <Td><IdChip>{c.id}</IdChip></Td>
-                <Td className="font-semibold text-slate-900 whitespace-nowrap">{c.code}</Td>
+                <Td className="font-medium text-slate-900 whitespace-nowrap">{c.code}</Td>
                 <Td>{c.name}</Td>
                 <Td>{c.creditHours}</Td>
                 <Td><TeacherCell name={c.teacherName} /></Td>
                 <Td right>
                   <RowActions>
-                    <LinkButton variant="rowLight" href={`/admin/edit-course/${c._id}`}><Pencil className="w-3 h-3" />Edit</LinkButton>
-                    <LinkButton variant="rowDark" href={`/admin/assign-teacher/${c._id}`}><UserCheck className="w-3 h-3" />Assign Teacher</LinkButton>
-                    <Button variant="rowDanger" onClick={() => onDelete(c)}><Trash2 className="w-3 h-3" />Delete</Button>
+                    <LinkButton variant="rowLight" href={`/admin/edit-course/${c._id}`}><Pencil className="w-4 h-4" />Edit</LinkButton>
+                    <LinkButton variant="rowDark" href={`/admin/assign-teacher/${c._id}`}><UserCheck className="w-4 h-4" />Assign Teacher</LinkButton>
+                    <Button variant="rowDanger" onClick={() => onDelete(c)}><Trash2 className="w-4 h-4" />Delete</Button>
                   </RowActions>
                 </Td>
               </Tr>
@@ -100,7 +100,7 @@ export default function ManageCoursesPage() {
           <CourseFields teachers={data?.teachers || []} idPrefix="add-" teacherLabel="Teacher (Optional)" />
           <div className="grid grid-cols-2 gap-2.5 pt-2">
             <Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button>
-            <Button variant="dark" type="submit" disabled={busy}><Plus className="w-3.5 h-3.5" />{busy ? 'Adding…' : 'Add Course'}</Button>
+            <Button variant="dark" type="submit" disabled={busy}><Plus className="w-4 h-4" />{busy ? 'Adding…' : 'Add Course'}</Button>
           </div>
         </form>
       </Modal>
