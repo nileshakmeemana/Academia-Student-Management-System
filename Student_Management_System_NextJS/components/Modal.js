@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
-// Dialog built from the mockup's sign-in card (rounded-card-lg, shadow-float).
+// Dialog in the mockup's style: white panel, 2xl shadow, blurred dark overlay.
 // Rendered through a portal; scroll is locked on both <html> and <body>.
 export default function Modal({ open, title, subtitle, onClose, size = 'max-w-lg', children }) {
   const panelRef = useRef(null);
@@ -28,21 +28,25 @@ export default function Modal({ open, title, subtitle, onClose, size = 'max-w-lg
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[70] bg-slate-900/30 backdrop-blur-sm flex items-start justify-center overflow-y-auto px-4 py-10 sm:py-16"
+      className="fixed inset-0 z-[70] bg-slate-950/60 backdrop-blur-[4px] flex items-start justify-center overflow-y-auto px-4 py-10 sm:py-16"
       onMouseDown={(e) => e.target === e.currentTarget && onClose?.()}
     >
-      <div ref={panelRef} role="dialog" aria-modal="true" aria-label={title} className={`w-full ${size} bg-white rounded-card-lg p-7 sm:p-8 shadow-float space-y-6`}>
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-950 tracking-tight">{title}</h2>
-            {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-label={title} className={`w-full ${size} bg-white rounded-xl shadow-2xl`}>
+        <div className="flex items-start justify-between gap-4 px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-slate-200">
+          <div className="space-y-1 min-w-0">
+            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+            {subtitle && <p className="text-sm text-slate-600">{subtitle}</p>}
           </div>
-          <button type="button" onClick={onClose} aria-label="Close"
-            className="w-9 h-9 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition shrink-0">
-            <X className="w-4 h-4" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="w-9 h-9 -mr-2 -mt-1 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-slate-500 transition shrink-0"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
-        {children}
+        <div className="p-5 sm:p-6">{children}</div>
       </div>
     </div>,
     document.body

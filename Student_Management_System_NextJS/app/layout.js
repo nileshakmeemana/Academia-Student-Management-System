@@ -14,14 +14,14 @@ export const viewport = { width: 'device-width', initialScale: 1 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="h-full flex flex-col bg-[#eceef0] text-slate-900 selection:bg-slate-900 selection:text-white">
+      <body className="min-h-screen bg-white text-slate-900 selection:bg-brand-100 selection:text-brand-800">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

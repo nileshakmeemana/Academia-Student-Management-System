@@ -2,11 +2,12 @@
 
 import { useRef, useState } from 'react';
 import { Field, INPUT } from './ui';
+import { PasswordInput } from './PublicShell';
 
-const BAR_COLORS = ['bg-rose-500', 'bg-amber-500', 'bg-blue-500', 'bg-[#65d33a]'];
+const BAR_COLORS = ['bg-[#f04438]', 'bg-[#f79009]', 'bg-brand-500', 'bg-emerald-500'];
 const LABELS = ['Weak', 'Moderate', 'Good', 'Strong'];
 
-// The mockup's password strength meter (informational only, like the original app
+// Password strength meter (informational only, like the original app
 // there is no enforced password rule).
 export function StrengthMeter({ value }) {
   let score = 0;
@@ -18,10 +19,10 @@ export function StrengthMeter({ value }) {
     <>
       <div className="mt-2 flex items-center gap-1.5">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${value && score > i ? BAR_COLORS[i] : 'bg-slate-200'}`} />
+          <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${value && score > i ? BAR_COLORS[i] : 'bg-slate-100'}`} />
         ))}
       </div>
-      <div className="text-[10px] font-semibold text-slate-400 mt-1">
+      <div className="text-13 text-slate-600 mt-1.5">
         {value ? `Strength: ${LABELS[score - 1] || 'Weak'}` : 'Use 8+ characters with a capital, a number and a symbol'}
       </div>
     </>
@@ -39,7 +40,7 @@ export default function AccountFields({ idPrefix = '' }) {
   };
   const id = (n) => `${idPrefix}${n}`;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-[18px]">
       <Field label="Username" htmlFor={id('username')}>
         <input className={INPUT} id={id('username')} name="username" required maxLength={50} autoComplete="username" placeholder="e.g. kasun" />
       </Field>
@@ -48,7 +49,7 @@ export default function AccountFields({ idPrefix = '' }) {
       </Field>
       <div>
         <Field label="Password" htmlFor={id('password')}>
-          <input className={INPUT} type="password" id={id('password')} name="password" required autoComplete="new-password"
+          <PasswordInput className={INPUT} id={id('password')} name="password" required autoComplete="new-password"
             value={pw} onChange={(e) => { setPw(e.target.value); check(e.target.value); }} placeholder="Create a password" />
         </Field>
         <StrengthMeter value={pw} />

@@ -6,7 +6,7 @@ import { Field, INPUT } from './ui';
 export default function PersonFields({ value = {}, role, withEmail = false, idPrefix = '', requireNames = true }) {
   const id = (n) => `${idPrefix}${n}`;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-[18px]">
       <Field label="First Name" htmlFor={id('firstName')}>
         <input className={INPUT} id={id('firstName')} name="firstName" defaultValue={value.firstName || ''} required={requireNames} maxLength={50} placeholder="Nilesh" />
       </Field>
