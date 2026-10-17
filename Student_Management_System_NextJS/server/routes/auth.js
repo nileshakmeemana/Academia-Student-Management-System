@@ -10,7 +10,10 @@ router.post(
   asyncHandler(async (req, res) => {
     const { username, password } = req.body;
     if (isBlank(username) || isBlank(password)) throw new HttpError(400, 'Enter your username and password.');
-    const user = await User.findOne({ username: String(username).trim() }).select('+password');
+    // Accepts the username or the account email.
+    const login = String(username).trim();
+    const query = login.includes('@') ? { email: login.toLowerCase() } : { username: login };
+    const user = await User.findOne(query).select('+password');
     if (!user || !(await user.checkPassword(password))) {
       throw new HttpError(401, 'Invalid username or password');
     }

@@ -2,7 +2,7 @@
 
 DEA Group G's Student Management System, converted from Java JSP/Servlets + MySQL to
 **MongoDB + Express + React (Next.js 14) + Node**. Every feature of the original app is kept,
-and the UI follows `academia_student_management_system.html`.
+and the UI follows the `academia.html` design.
 
 It is one Next.js project, so it deploys to Vercel as a single app. The Express API runs
 inside Next.js as a serverless function (`pages/api/[...path].js`), on the same domain as the pages.
@@ -95,20 +95,25 @@ so the tables show the same IDs as the MySQL version.
 
 ## UI
 
-The whole app (landing, sign in, register, dashboards and every management page) uses the
-**Academia** design from `academia_student_management_system.html`:
+The whole app (landing, sign in, register, dashboards and every management page) follows the
+**Academia** design in `academia.html`: white surfaces, a gray + purple (`#7f56d9`) palette,
+Inter, bordered cards and skeuomorphic buttons.
 
-- `tailwind.config.js` is the mockup's `tailwind.config` block (canvas colour, card radii,
-  `shadow-subtle / float / popover`, Inter).
-- `app/globals.css` holds the mockup's `<style>` block verbatim (beacon pulse, hatch pattern,
-  scrollbars). Tailwind is compiled at build time instead of loaded from the CDN.
-- `components/ui.js` turns the mockup's markup into React pieces (KPI cards, cards with
-  icon headers, roster tables, micro-beacon statuses, bar chart, dark charcoal card, approval-style
-  list rows, inputs) using the mockup's class strings.
-- `components/AppShell.js` is the mockup sidebar (green active pill, grouped nav,
-  collapse toggle) and top bar: ⌘K search (filters the table on the current page), a notices bell,
-  a role-aware **+ New** menu and the profile menu with Sign Out.
-- Feedback uses the mockup's bottom-right toast; form errors show inline.
+- `tailwind.config.js` holds the design tokens: the gray scale (also used for every `slate-*`
+  class), the `brand-*` purple scale, the success green, and the `xs / skeuo / lg / 2xl` shadows.
+- `app/globals.css` has the base type settings, the orb logo mark, the hero grid and the select arrow.
+- `components/styles.js` has the class helpers (`cx`, `btnClass`) and the logo, usable from server
+  and client components.
+- `components/ui.js` turns the mockup's pieces into React components: primary/secondary buttons,
+  bordered cards with icon headers, full-bleed tables, dot badges, initials avatars, the
+  overview (big metric + chart + stats column), action cards, segmented tabs, inputs.
+- `components/AppShell.js` is the mockup sidebar: logo, ⌘K search (filters the table on the current
+  page, or the menu), nav with record counts, and the account card with Profile / Sign out.
+  The page header has a notices button and a role-aware **+ New** menu. On phones the sidebar
+  slides in from a top bar.
+- `components/PublicShell.js` has the landing header/footer and the centred sign-in / sign-up layout.
+- Sign in accepts a username or an email. Google sign-in, "Remember for 30 days" and "Forgot password"
+  from the mockup are not included because the app has no backend for them.
 - Brand name lives in `lib/brand.js`.
 
 ## Deploying to Vercel
