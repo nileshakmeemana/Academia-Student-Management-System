@@ -9,7 +9,7 @@ import StatusPicker from '@/components/teacher/StatusPicker';
 import { usePage } from '@/components/PageContext';
 import {
   Beacon, Button, Card, CardHeader, Empty, ErrorCard, Field, FormError, INPUT, IdChip, LinkButton, Loading, Meter,
-  PersonCell, RowActions, Table, Td, Tr, cx, matches, useFlash, useLoad,
+  PersonCell, RowActions, Table, Td, Tr, matches, useFlash, useLoad, Segmented,
 } from '@/components/ui';
 import { api } from '@/lib/api';
 import { attendanceTone, longDate, pct, rateColor, todayIso } from '@/lib/format';
@@ -87,10 +87,10 @@ function ManageAttendance() {
         <>
           <Card>
             <CardHeader icon={CalendarCheck} title={`Attendance for ${data.course.code} - ${data.course.name}`} subtitle={`${dates.length} day${dates.length === 1 ? '' : 's'} recorded`}>
-              <Button variant="outline" className="h-9" onClick={() => { setPickDate(todayIso()); setPicking(true); }}>
-                <CalendarPlus className="w-3.5 h-3.5" />Another Date
+              <Button variant="outline" onClick={() => { setPickDate(todayIso()); setPicking(true); }}>
+                <CalendarPlus className="w-4 h-4" />Another Date
               </Button>
-              <LinkButton variant="pill" href={takeHref()}><CalendarCheck className="w-3.5 h-3.5" />Take Today&apos;s Attendance</LinkButton>
+              <LinkButton variant="pill" href={takeHref()}><CalendarCheck className="w-4 h-4" />Take Today&apos;s Attendance</LinkButton>
             </CardHeader>
 
             {dates.length === 0 ? (
@@ -100,20 +100,12 @@ function ManageAttendance() {
               </Empty>
             ) : (
               <>
-                <div className="flex flex-wrap gap-2 pb-4" role="tablist">
-                  {dates.map((d) => (
-                    <button key={d} type="button" role="tab" aria-selected={d === activeDate} onClick={() => setActiveDate(d)}
-                      className={cx('py-1.5 px-3 text-[11px] rounded-full border transition tabular-nums',
-                        d === activeDate ? 'border-[#7ee352] bg-[#7ee352] text-slate-950 font-bold' : 'font-medium border-slate-200 bg-white text-slate-600 hover:border-slate-400')}>
-                      {d}
-                    </button>
-                  ))}
-                </div>
+                <Segmented label="Attendance date" value={activeDate} onChange={setActiveDate} items={dates.map((d) => ({ value: d, label: d }))} className="mb-5" />
                 {activeDate && (
                   <>
-                    <div className="flex flex-wrap items-center justify-between gap-2 pb-2">
-                      <div className="text-xs font-bold text-slate-900">Attendance for {longDate(activeDate)}</div>
-                      <LinkButton variant="rowLight" href={takeHref(activeDate)}><SquarePen className="w-3 h-3" />Edit This Day&apos;s Attendance</LinkButton>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pb-4">
+                      <div className="text-sm font-semibold text-slate-900">Attendance for {longDate(activeDate)}</div>
+                      <LinkButton variant="rowLight" href={takeHref(activeDate)}><SquarePen className="w-4 h-4" />Edit This Day&apos;s Attendance</LinkButton>
                     </div>
                     <Table head={['Student ID', 'Name', 'Status', { label: 'Action', right: true }]} minWidth={520}>
                       {students.map((s) => {
@@ -126,7 +118,7 @@ function ManageAttendance() {
                             <Td right>
                               <RowActions>
                                 <Button variant="rowLight" onClick={() => { setFormError(''); setEditing({ student: s, date: activeDate, status: st || 'Present' }); }}>
-                                  <PencilLine className="w-3 h-3" />Update
+                                  <PencilLine className="w-4 h-4" />Update
                                 </Button>
                               </RowActions>
                             </Td>
@@ -157,7 +149,7 @@ function ManageAttendance() {
                       <Td>
                         <div className="flex items-center gap-3 min-w-[180px]">
                           <Meter value={sm.rate} color={rateColor(sm.rate)} />
-                          <span className="w-12 text-right font-bold text-slate-900 tabular-nums">{pct(sm.rate)}</span>
+                          <span className="w-14 text-right font-medium text-slate-900 tabular-nums">{pct(sm.rate)}</span>
                         </div>
                       </Td>
                     </Tr>
@@ -176,7 +168,7 @@ function ManageAttendance() {
           </Field>
           <div className="grid grid-cols-2 gap-2.5 pt-2">
             <Button variant="outline" onClick={() => setPicking(false)}>Cancel</Button>
-            <Button variant="dark" type="submit"><CalendarCheck className="w-3.5 h-3.5" />Go to Selected Date</Button>
+            <Button variant="dark" type="submit"><CalendarCheck className="w-4 h-4" />Go to Selected Date</Button>
           </div>
         </form>
       </Modal>
@@ -188,7 +180,7 @@ function ManageAttendance() {
             <StatusPicker name="status" label="Status" value={editing.status} onChange={(st) => setEditing({ ...editing, status: st })} />
             <div className="grid grid-cols-2 gap-2.5 pt-2">
               <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-              <Button variant="dark" type="submit" disabled={busy}><Save className="w-3.5 h-3.5" />{busy ? 'Saving…' : 'Save Changes'}</Button>
+              <Button variant="dark" type="submit" disabled={busy}><Save className="w-4 h-4" />{busy ? 'Saving…' : 'Save Changes'}</Button>
             </div>
           </form>
         )}

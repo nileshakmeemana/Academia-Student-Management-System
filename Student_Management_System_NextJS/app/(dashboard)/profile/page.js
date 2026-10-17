@@ -80,21 +80,21 @@ export default function ProfilePage() {
         <div className="lg:col-span-4 space-y-5">
           <Card>
             <div className="flex items-center gap-3 pb-4">
-              <Avatar name={user.username} size="w-12 h-12 text-base" dark />
+              <Avatar name={user.username} size="w-14 h-14 text-lg" online />
               <div className="min-w-0">
-                <div className="text-sm font-bold text-slate-950 truncate">{person ? person.name : user.username}</div>
-                <div className="text-[11px] text-slate-400 font-medium">{ROLE_LABEL[user.role]}</div>
+                <div className="text-base font-semibold text-slate-900 truncate">{person ? person.name : user.username}</div>
+                <div className="text-13 text-slate-600">{ROLE_LABEL[user.role]}</div>
               </div>
             </div>
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-200">
               <KV label="Username">{user.username}</KV>
               <KV label="Email">{user.email}</KV>
               <KV label="Role">{ROLE_LABEL[user.role]}</KV>
               <KV label="Account Created">{isoDay(user.createdAt)}</KV>
             </div>
-            <div className="grid grid-cols-2 gap-2.5 pt-4">
-              <Button variant="outline" onClick={() => open('password')}><KeyRound className="w-3.5 h-3.5" />Change Password</Button>
-              <Button variant="outline" onClick={() => open('email')}><Mail className="w-3.5 h-3.5" />Update Email</Button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-2.5 pt-4">
+              <Button variant="outline" onClick={() => open('password')}><KeyRound className="w-4 h-4" />Change Password</Button>
+              <Button variant="outline" onClick={() => open('email')}><Mail className="w-4 h-4" />Update Email</Button>
             </div>
           </Card>
         </div>
@@ -104,7 +104,7 @@ export default function ProfilePage() {
             <div className="space-y-5">
               <Card>
                 <CardHeader icon={ShieldCheck} title="Administrator" subtitle="Personal information" />
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-sm text-slate-600 leading-[22px]">
                   As an administrator, you can manage all aspects of the system. Use the navigation menu to access the different management sections.
                 </p>
               </Card>
@@ -126,7 +126,7 @@ export default function ProfilePage() {
                   <FormError message={profileError} />
                   <PersonFields value={person} role={user.role} />
                   <div className="flex justify-end pt-2">
-                    <Button variant="dark" type="submit" disabled={busy}><Save className="w-3.5 h-3.5" />{busy ? 'Saving…' : 'Update Profile'}</Button>
+                    <Button variant="dark" type="submit" disabled={busy}><Save className="w-4 h-4" />{busy ? 'Saving…' : 'Update Profile'}</Button>
                   </div>
                 </form>
               ) : (
@@ -151,7 +151,7 @@ export default function ProfilePage() {
           </Field>
           <div className="grid grid-cols-2 gap-2.5 pt-2">
             <Button variant="outline" onClick={() => setModal(null)}>Cancel</Button>
-            <Button variant="dark" type="submit" disabled={busy}><KeyRound className="w-3.5 h-3.5" />{busy ? 'Saving…' : 'Change Password'}</Button>
+            <Button variant="dark" type="submit" disabled={busy}><KeyRound className="w-4 h-4" />{busy ? 'Saving…' : 'Change Password'}</Button>
           </div>
         </form>
       </Modal>
@@ -170,7 +170,7 @@ export default function ProfilePage() {
           </Field>
           <div className="grid grid-cols-2 gap-2.5 pt-2">
             <Button variant="outline" onClick={() => setModal(null)}>Cancel</Button>
-            <Button variant="dark" type="submit" disabled={busy}><Mail className="w-3.5 h-3.5" />{busy ? 'Saving…' : 'Update Email'}</Button>
+            <Button variant="dark" type="submit" disabled={busy}><Mail className="w-4 h-4" />{busy ? 'Saving…' : 'Update Email'}</Button>
           </div>
         </form>
       </Modal>

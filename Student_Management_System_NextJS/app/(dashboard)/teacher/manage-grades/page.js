@@ -60,13 +60,13 @@ function ManageGrades() {
       {courseId && grades.loading && !grades.data && <Loading />}
       {course && (
         <Card>
-          <CardHeader icon={ClipboardList} title={`Grades for ${course.code} - ${course.name}`} subtitle={`${course.creditHours} credits · ${all.length} students`} />
+          <CardHeader icon={ClipboardList} title={`Grades for ${course.code} - ${course.name}`} subtitle={`${course.creditHours} credits · ${all.length} student${all.length === 1 ? '' : 's'}`} />
           {all.length === 0 ? (
             <Empty>No students enrolled in this course yet.</Empty>
           ) : rows.length === 0 ? (
             <Empty>No students match “{query}”.</Empty>
           ) : (
-            <Table head={['Student ID', 'Name', 'Assignment', 'Midterm', 'Final', 'Total', 'Grade', 'Grade Point', 'Credits Earned', 'Academic Status', { label: 'Action', right: true }]} minWidth={1080}>
+            <Table head={['ID', 'Name', 'Assignment', 'Midterm', 'Final', 'Total', 'Grade', 'Grade Point', 'Credits', 'Status', { label: 'Action', right: true }]} minWidth={1000}>
               {rows.map((s) => (
                 <Tr key={s._id}>
                   <Td><IdChip>{s.id}</IdChip></Td>
@@ -74,14 +74,14 @@ function ManageGrades() {
                   <Td>{score(s.grade?.assignmentScore)}</Td>
                   <Td>{score(s.grade?.midtermScore)}</Td>
                   <Td>{score(s.grade?.finalScore)}</Td>
-                  <Td className="font-bold text-slate-900">{score(s.grade?.totalScore)}</Td>
+                  <Td className="font-medium text-slate-900">{score(s.grade?.totalScore)}</Td>
                   <Td><Beacon tone={gradeTone(s.grade?.grade)}>{s.grade?.grade || 'N/A'}</Beacon></Td>
                   <Td>{point(s.grade?.gradePoint)}</Td>
                   <Td>{s.grade?.earnedCredits ?? 0}</Td>
                   <Td><Beacon tone={statusTone(s.grade?.academicStatus)}>{s.grade?.academicStatus || 'Not Graded'}</Beacon></Td>
                   <Td right>
                     <RowActions>
-                      <Button variant="rowDark" onClick={() => { setFormError(''); setEditing(s); }}><PencilLine className="w-3 h-3" />Update Grade</Button>
+                      <Button variant="rowLight" onClick={() => { setFormError(''); setEditing(s); }}><PencilLine className="w-4 h-4" />Update</Button>
                     </RowActions>
                   </Td>
                 </Tr>
@@ -106,7 +106,7 @@ function ManageGrades() {
             ))}
             <div className="grid grid-cols-2 gap-2.5 pt-2">
               <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-              <Button variant="dark" type="submit" disabled={busy}><Save className="w-3.5 h-3.5" />{busy ? 'Saving…' : 'Save Changes'}</Button>
+              <Button variant="dark" type="submit" disabled={busy}><Save className="w-4 h-4" />{busy ? 'Saving…' : 'Save Changes'}</Button>
             </div>
           </form>
         )}

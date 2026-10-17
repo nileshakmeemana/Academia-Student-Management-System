@@ -1,89 +1,110 @@
 'use client';
 
-import { Award, BellRing, BookOpen, BookPlus, CalendarCheck, Gauge, GraduationCap, LayoutGrid, UserRound } from 'lucide-react';
+import { Award, BellRing, BookPlus, CalendarCheck, UserRound } from 'lucide-react';
 import { usePage } from '@/components/PageContext';
 import {
-  Beacon, Card, CardHeader, DarkLinks, Empty, ErrorCard, KV, Kpi, KpiGrid, LinkButton, ListRow, Loading, Table, Td,
-  TeacherCell, Tr, useLoad,
+  ActionCards, BarChart, Beacon, Card, CardHeader, ContentGrid, Empty, ErrorCard, KV, LinkButton, ListRow, Loading,
+  Metric, Overview, SectionHead, SideTitle, Table, Td, TeacherCell, Tr, useLoad,
 } from '@/components/ui';
 import { gpa, isoDay, statusTone } from '@/lib/format';
 
 export default function StudentDashboard() {
   const { data, loading, error } = useLoad('/student/dashboard');
   const s = data?.student;
-  usePage({ title: 'Student Dashboard', subtitle: s ? `Welcome, ${s.firstName} ${s.lastName}` : '' });
+  usePage({ title: 'Dashboard', subtitle: s ? `Welcome back, ${s.firstName} ${s.lastName}` : '' });
 
   if (loading) return <Loading />;
   if (error) return <ErrorCard message={error} />;
 
+  const totalCredits = data.courses.reduce((n, c) => n + (Number(c.creditHours) || 0), 0);
+
   return (
     <>
-      <KpiGrid>
-        <Kpi icon={Gauge} label="Current GPA" value={gpa(data.summary.gpa)} />
-        <Kpi icon={Award} label="Credits Earned" value={data.summary.totalEarnedCredits} />
-        <Kpi icon={GraduationCap} label="Academic Status">
-          <div className="mt-1.5"><Beacon tone={statusTone(data.summary.academicStatus)} pulse>{data.summary.academicStatus}</Beacon></div>
-        </Kpi>
-        <Kpi icon={BookOpen} label="Enrolled Courses" value={data.courses.length} />
-      </KpiGrid>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <Card className="lg:col-span-7">
-          <CardHeader icon={BookOpen} title="Enrolled Courses" subtitle="Courses you are taking">
-            <LinkButton variant="rowLight" href="/student/view-courses">View All Courses</LinkButton>
-          </CardHeader>
-          {data.courses.length === 0 ? (
-            <Empty>
-              <span>You are not enrolled in any courses yet.</span>
-              <LinkButton variant="rowDark" href="/student/course-registration"><BookPlus className="w-3 h-3" />Register for Courses</LinkButton>
-            </Empty>
-          ) : (
-            <Table head={['Course Code', 'Course Name', 'Credit Hours', 'Teacher']} minWidth={520}>
-              {data.courses.map((c) => (
-                <Tr key={c._id}>
-                  <Td className="font-semibold text-slate-900 whitespace-nowrap">{c.code}</Td>
-                  <Td>{c.name}</Td>
-                  <Td>{c.creditHours}</Td>
-                  <Td><TeacherCell name={c.teacherName} /></Td>
-                </Tr>
-              ))}
-            </Table>
-          )}
-        </Card>
-
-        <Card className="lg:col-span-5">
-          <CardHeader icon={UserRound} title="Your Details" subtitle="From your student profile" />
-          <div className="divide-y divide-slate-50">
-            <KV label="Student ID">{s.id}</KV>
-            <KV label="Email">{s.email}</KV>
-            <KV label="Enrollment Date">{isoDay(s.enrollmentDate)}</KV>
+      <Overview
+        metric={
+          <Metric label="Current GPA" value={gpa(data.summary.gpa)}>
+            <div className="mt-2"><Beacon tone={statusTone(data.summary.academicStatus)}>{data.summary.academicStatus}</Beacon></div>
+          </Metric>
+        }
+        chart={
+          <div>
+            <div className="text-13 font-medium text-slate-600 mb-3">Credit hours by enrolled course</div>
+            <BarChart bars={data.courses.map((c) => ({ label: c.code, value: Number(c.creditHours) || 0 }))} emptyLabel="You are not enrolled in any courses yet." />
           </div>
-        </Card>
-      </div>
+        }
+        stats={[
+          { label: 'Credits earned', value: data.summary.totalEarnedCredits },
+          { label: 'Enrolled courses', value: data.courses.length },
+          { label: 'Credit hours this term', value: totalCredits },
+        ]}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-        <div className="md:col-span-5">
-          <DarkLinks
-            icon={LayoutGrid}
-            title="Quick Links"
-            items={[
-              { href: '/student/view-grades', label: 'View Grades', sub: 'Scores, grade points and your GPA.', icon: Award },
-              { href: '/student/view-attendance', label: 'View Attendance', sub: 'Attendance rate and records per course.', icon: CalendarCheck },
-              { href: '/profile', label: 'Edit Profile', sub: 'Personal details and password.', icon: UserRound },
-            ]}
-          />
-        </div>
-        <Card className="md:col-span-7">
-          <CardHeader icon={BellRing} title="Notices for Students" subtitle="Reminders" />
-          {data.deadlines.length ? (
-            <div className="space-y-1">
-              {data.deadlines.map((d) => <ListRow key={d.title} icon={BellRing} title={d.title} sub={d.description} />)}
+      <ContentGrid
+        main={
+          <>
+            <div>
+              <SectionHead title="Your academics" />
+              <div className="mt-5">
+                <ActionCards
+                  items={[
+                    { href: '/student/view-grades', label: 'View grades', sub: 'Scores, grade points and GPA', icon: Award },
+                    { href: '/student/view-attendance', label: 'View attendance', sub: 'Your rate and records per course', icon: CalendarCheck },
+                    { href: '/student/course-registration', label: 'Register for courses', sub: 'Enroll in or drop a course', icon: BookPlus },
+                    { href: '/profile', label: 'Edit profile', sub: 'Personal details and password', icon: UserRound },
+                  ]}
+                />
+              </div>
             </div>
-          ) : (
-            <Empty>No notices for students.</Empty>
-          )}
-        </Card>
-      </div>
+
+            <Card>
+              <CardHeader title="Enrolled courses" subtitle="Courses you are taking">
+                <LinkButton variant="rowLight" href="/student/view-courses">View all</LinkButton>
+              </CardHeader>
+              {data.courses.length === 0 ? (
+                <Empty>
+                  <span>You are not enrolled in any courses yet.</span>
+                  <LinkButton variant="rowDark" href="/student/course-registration"><BookPlus className="w-4 h-4" />Register for courses</LinkButton>
+                </Empty>
+              ) : (
+                <Table head={['Course', 'Credit hours', 'Teacher']} minWidth={520}>
+                  {data.courses.map((c) => (
+                    <Tr key={c._id}>
+                      <Td>
+                        <div className="font-medium text-slate-900">{c.code}</div>
+                        <div className="text-slate-600">{c.name}</div>
+                      </Td>
+                      <Td className="tabular-nums">{c.creditHours}</Td>
+                      <Td><TeacherCell name={c.teacherName} /></Td>
+                    </Tr>
+                  ))}
+                </Table>
+              )}
+            </Card>
+          </>
+        }
+        side={
+          <>
+            <div>
+              <SideTitle>Your details</SideTitle>
+              <div className="mt-2 divide-y divide-slate-200">
+                <KV label="Student ID">{s.id}</KV>
+                <KV label="Email"><span title={s.email}>{s.email}</span></KV>
+                <KV label="Enrolled on">{isoDay(s.enrollmentDate)}</KV>
+              </div>
+            </div>
+            <div>
+              <SideTitle>Notices</SideTitle>
+              <div className="mt-4 space-y-2">
+                {data.deadlines.length ? (
+                  data.deadlines.map((d) => <ListRow key={d.title} icon={BellRing} title={d.title} sub={d.description} />)
+                ) : (
+                  <p className="text-sm text-slate-600">No notices for students.</p>
+                )}
+              </div>
+            </div>
+          </>
+        }
+      />
     </>
   );
 }

@@ -37,14 +37,14 @@ export default function ViewCoursesPage() {
       <ErrorCard message={error} />
       <Card>
         <CardHeader icon={BookOpen} title="Enrolled Courses" subtitle={data ? `${all.length} course${all.length === 1 ? '' : 's'}` : ''}>
-          <LinkButton variant="pill" href="/student/course-registration"><BookPlus className="w-3.5 h-3.5" />Register for Courses</LinkButton>
+          <LinkButton variant="pill" href="/student/course-registration"><BookPlus className="w-4 h-4" />Register for Courses</LinkButton>
         </CardHeader>
         {loading && !data ? (
           <Loading />
         ) : all.length === 0 ? (
           <Empty>
             <span>You are not enrolled in any courses yet.</span>
-            <LinkButton variant="rowDark" href="/student/course-registration"><BookPlus className="w-3 h-3" />Register for Courses</LinkButton>
+            <LinkButton variant="rowDark" href="/student/course-registration"><BookPlus className="w-4 h-4" />Register for Courses</LinkButton>
           </Empty>
         ) : rows.length === 0 ? (
           <Empty>No courses match “{query}”.</Empty>
@@ -52,7 +52,7 @@ export default function ViewCoursesPage() {
           <Table head={['Course Code', 'Course Name', 'Description', 'Credit Hours', 'Teacher', { label: 'Action', right: true }]} minWidth={820}>
             {rows.map((c) => (
               <Tr key={c._id}>
-                <Td className="font-semibold text-slate-900 whitespace-nowrap">{c.code}</Td>
+                <Td className="font-medium text-slate-900 whitespace-nowrap">{c.code}</Td>
                 <Td>{c.name}</Td>
                 <Td className="max-w-[260px] whitespace-normal leading-relaxed">{c.description || '—'}</Td>
                 <Td>{c.creditHours}</Td>
@@ -60,7 +60,7 @@ export default function ViewCoursesPage() {
                 <Td right>
                   <RowActions>
                     <Button variant="rowDanger" onClick={() => onDrop(c)} disabled={busyId === c._id}>
-                      <LogOut className="w-3 h-3" />{busyId === c._id ? 'Dropping…' : 'Drop Course'}
+                      <LogOut className="w-4 h-4" />{busyId === c._id ? 'Dropping…' : 'Drop Course'}
                     </Button>
                   </RowActions>
                 </Td>

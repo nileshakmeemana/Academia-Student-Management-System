@@ -61,7 +61,7 @@ export default function CourseRegistrationPage() {
             <Table head={['Course Code', 'Course Name', 'Description', 'Credit Hours', 'Teacher', 'Status', { label: 'Action', right: true }]} minWidth={860}>
               {rows.map((c) => (
                 <Tr key={c._id}>
-                  <Td className="font-semibold text-slate-900 whitespace-nowrap">{c.code}</Td>
+                  <Td className="font-medium text-slate-900 whitespace-nowrap">{c.code}</Td>
                   <Td>{c.name}</Td>
                   <Td className="max-w-[200px] whitespace-normal leading-relaxed">{c.description || '—'}</Td>
                   <Td>{c.creditHours}</Td>
@@ -71,11 +71,11 @@ export default function CourseRegistrationPage() {
                     <RowActions>
                       {c.enrolled ? (
                         <Button variant="rowDanger" onClick={() => toggle(c)} disabled={busyId === c._id}>
-                          <LogOut className="w-3 h-3" />{busyId === c._id ? 'Dropping…' : 'Drop Course'}
+                          <LogOut className="w-4 h-4" />{busyId === c._id ? 'Dropping…' : 'Drop Course'}
                         </Button>
                       ) : (
                         <Button variant="rowDark" onClick={() => toggle(c)} disabled={busyId === c._id}>
-                          <BookPlus className="w-3 h-3" />{busyId === c._id ? 'Enrolling…' : 'Enroll'}
+                          <BookPlus className="w-4 h-4" />{busyId === c._id ? 'Enrolling…' : 'Enroll'}
                         </Button>
                       )}
                     </RowActions>

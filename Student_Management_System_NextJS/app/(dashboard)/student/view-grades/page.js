@@ -44,7 +44,7 @@ export default function ViewGradesPage() {
         {courses.length === 0 ? (
           <Empty>
             <span>You are not enrolled in any courses yet.</span>
-            <LinkButton variant="rowDark" href="/student/course-registration"><BookPlus className="w-3 h-3" />Register for Courses</LinkButton>
+            <LinkButton variant="rowDark" href="/student/course-registration"><BookPlus className="w-4 h-4" />Register for Courses</LinkButton>
           </Empty>
         ) : (
           <Table head={['Course Code', 'Course Name', 'Credit Hours', 'Assignment', 'Midterm', 'Final', 'Total', 'Grade', 'Grade Point', 'Credits Earned', 'Status']} minWidth={1040}>
@@ -52,13 +52,13 @@ export default function ViewGradesPage() {
               const g = c.grade;
               return (
                 <Tr key={c._id}>
-                  <Td className="font-semibold text-slate-900 whitespace-nowrap">{c.code}</Td>
+                  <Td className="font-medium text-slate-900 whitespace-nowrap">{c.code}</Td>
                   <Td>{c.name}</Td>
                   <Td>{c.creditHours}</Td>
                   <Td>{score(g?.assignmentScore)}</Td>
                   <Td>{score(g?.midtermScore)}</Td>
                   <Td>{score(g?.finalScore)}</Td>
-                  <Td className="font-bold text-slate-900">{score(g?.totalScore)}</Td>
+                  <Td className="font-medium text-slate-900">{score(g?.totalScore)}</Td>
                   <Td>{g?.grade ? <Beacon tone={gradeTone(g.grade)}>{g.grade}</Beacon> : <Beacon>Not Graded</Beacon>}</Td>
                   <Td>{point(g?.gradePoint)}</Td>
                   <Td>{g?.earnedCredits ?? 0}</Td>
@@ -78,10 +78,10 @@ export default function ViewGradesPage() {
           </Card>
           <Card className="lg:col-span-5">
             <CardHeader icon={ListChecks} title="Grade Legend" subtitle="How totals map to grades" />
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-200">
               {LEGEND.map(([range, pts, label, tone]) => (
-                <div key={range} className="flex items-center justify-between py-2.5 text-xs">
-                  <span><span className="font-semibold text-slate-900">{range}</span><span className="text-slate-400"> · {pts}</span></span>
+                <div key={range} className="flex items-center justify-between py-3 text-sm">
+                  <span><span className="font-medium text-slate-900">{range}</span><span className="text-slate-500"> · {pts}</span></span>
                   <Beacon tone={tone}>{label}</Beacon>
                 </div>
               ))}

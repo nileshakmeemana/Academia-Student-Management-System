@@ -6,7 +6,7 @@ import { ArrowLeft, CalendarCheck, CheckCheck, Clock, Send, UserX } from 'lucide
 import StatusPicker from '@/components/teacher/StatusPicker';
 import { usePage } from '@/components/PageContext';
 import {
-  Button, Card, CardHeader, Empty, ErrorCard, FormError, INPUT, IdChip, LinkButton, Loading, MiniStat, PersonCell,
+  Button, Card, CardHeader, Empty, ErrorCard, FormError, INPUT, LABEL, IdChip, LinkButton, Loading, MiniStat, PersonCell,
   Table, Td, Tr, matches, useLoad,
 } from '@/components/ui';
 import { api } from '@/lib/api';
@@ -57,7 +57,7 @@ function TakeAttendance() {
     return (
       <>
         <ErrorCard message={sheet.error} />
-        <div><LinkButton variant="white" href="/teacher/manage-attendance"><ArrowLeft className="w-3.5 h-3.5" />Back to Attendance Management</LinkButton></div>
+        <div><LinkButton variant="white" href="/teacher/manage-attendance"><ArrowLeft className="w-4 h-4" />Back to Attendance Management</LinkButton></div>
       </>
     );
   }
@@ -74,7 +74,7 @@ function TakeAttendance() {
         title={longDate(data.date)}
         subtitle={recorded ? `Editing ${recorded} saved record${recorded === 1 ? '' : 's'} for this day` : 'Nothing saved for this day yet'}
       >
-        <LinkButton variant="rowLight" href={back}><ArrowLeft className="w-3 h-3" />Back</LinkButton>
+        <LinkButton variant="rowLight" href={back}><ArrowLeft className="w-4 h-4" />Back</LinkButton>
       </CardHeader>
 
       {data.students.length === 0 ? (
@@ -86,7 +86,7 @@ function TakeAttendance() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <div className="md:col-span-4">
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="date">Date</label>
+              <label className={LABEL} htmlFor="date">Date</label>
               <input id="date" className={INPUT} type="date" value={data.date} required
                 onChange={(e) => e.target.value && router.replace(`/teacher/take-attendance?courseId=${courseId}&date=${e.target.value}`)} />
             </div>
@@ -98,9 +98,9 @@ function TakeAttendance() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button variant="rowLight" onClick={() => setAll('Present')}><CheckCheck className="w-3 h-3" />Mark All Present</Button>
-            <Button variant="rowLight" onClick={() => setAll('Late')}><Clock className="w-3 h-3" />Mark All Late</Button>
-            <Button variant="rowLight" onClick={() => setAll('Absent')}><UserX className="w-3 h-3" />Mark All Absent</Button>
+            <Button variant="rowLight" onClick={() => setAll('Present')}><CheckCheck className="w-4 h-4" />Mark All Present</Button>
+            <Button variant="rowLight" onClick={() => setAll('Late')}><Clock className="w-4 h-4" />Mark All Late</Button>
+            <Button variant="rowLight" onClick={() => setAll('Absent')}><UserX className="w-4 h-4" />Mark All Absent</Button>
           </div>
 
           <FormError message={formError} />
@@ -119,7 +119,7 @@ function TakeAttendance() {
 
           <div className="flex flex-wrap justify-end gap-2.5 pt-2">
             <LinkButton variant="outline" href={back}>Cancel</LinkButton>
-            <Button variant="green" type="submit" disabled={busy}><Send className="w-3.5 h-3.5" />{busy ? 'Saving…' : 'Submit Attendance'}</Button>
+            <Button variant="green" type="submit" disabled={busy}><Send className="w-4 h-4" />{busy ? 'Saving…' : 'Submit Attendance'}</Button>
           </div>
         </form>
       )}
