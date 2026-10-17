@@ -3,30 +3,27 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
-import { AuthCardHeader, BackLink, PublicHeader } from '@/components/PublicShell';
+import { BookOpen, ClipboardCheck, LoaderCircle } from 'lucide-react';
+import { AUTH_TABS, AuthLayout } from '@/components/PublicShell';
 import AccountFields from '@/components/AccountFields';
 import PersonFields from '@/components/PersonFields';
-import { FormError, LABEL, cx } from '@/components/ui';
+import { FormError, FormSection, LABEL, btnClass, cx } from '@/components/ui';
 import { api, formToObject } from '@/lib/api';
 
+// Students and teachers can self-register (admins are created by an admin), like the original app.
 const ROLES = [
-  { value: 'student', label: 'Student' },
-  { value: 'teacher', label: 'Teacher' },
+  { value: 'student', label: 'Student', icon: BookOpen },
+  { value: 'teacher', label: 'Teacher', icon: ClipboardCheck },
 ];
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('student');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (!role) {
-      setError('Choose whether you are registering as a student or a teacher.');
-      return;
-    }
     setBusy(true);
     setError('');
     try {
@@ -40,55 +37,47 @@ export default function RegisterPage() {
   }
 
   return (
-    <>
-      <PublicHeader />
-      <section className="w-full flex-1 flex items-center justify-center py-12 px-6 sm:px-10">
-        <div className="w-full max-w-2xl mx-auto space-y-6">
-          <BackLink />
-          <div className="bg-white rounded-card-lg p-8 sm:p-10 shadow-float space-y-6">
-            <AuthCardHeader title="Create your account" subtitle="Register as a student or a teacher" />
+    <AuthLayout title="Create an account" subtitle="Join Academia as a student or a teacher." tabs={AUTH_TABS('register')} width="max-w-[480px]">
+      <form onSubmit={onSubmit} className="mt-7 space-y-[18px]">
+        <FormError message={error} />
 
-            <form onSubmit={onSubmit} className="space-y-4">
-              <FormError message={error} />
-              <div>
-                <div className={LABEL}>Register as</div>
-                <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Register as">
-                  {ROLES.map((r) => (
-                    <button key={r.value} type="button" role="radio" aria-checked={role === r.value}
-                      onClick={() => { setRole(r.value); setError(''); }}
-                      className={cx(
-                        'py-2 px-3 text-xs rounded-xl border transition text-center',
-                        role === r.value ? 'font-semibold border-slate-900 bg-[#1e2229] text-white' : 'font-medium border-slate-200 bg-white text-slate-700 hover:border-slate-400'
-                      )}>
-                      {r.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <AccountFields />
-
-              {role && (
-                <div className="pt-2 space-y-4">
-                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{role === 'teacher' ? 'Teacher details' : 'Student details'}</div>
-                  <PersonFields role={role} />
-                </div>
-              )}
-
-              <button type="submit" disabled={busy}
-                className="w-full h-10 rounded-xl bg-[#65d33a] hover:bg-[#5ec435] text-slate-950 text-xs font-bold flex items-center justify-center gap-2 transition active:scale-[0.99] shadow-subtle disabled:opacity-60">
-                <span>{busy ? 'Creating account…' : 'Register'}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-950" strokeWidth={2.5} />
-              </button>
-            </form>
-
-            <div className="text-center text-xs text-slate-500">
-              Already have an account?
-              <Link href="/login" className="font-bold text-slate-900 hover:underline ml-1">Sign in here</Link>
-            </div>
+        <fieldset>
+          <legend className={LABEL}>I am a</legend>
+          <div className="grid grid-cols-2 gap-2">
+            {ROLES.map(({ value, label, icon: Icon }) => (
+              <label key={value} className="cursor-pointer">
+                <input type="radio" name="role-pick" value={value} checked={role === value} onChange={() => setRole(value)} className="sr-only peer" />
+                <span
+                  className={cx(
+                    'h-[38px] flex items-center justify-center gap-1.5 rounded-lg text-13 font-semibold transition peer-focus-visible:ring-4 peer-focus-visible:ring-brand-500/25',
+                    role === value
+                      ? 'bg-brand-50 text-brand-700 shadow-[0_1px_2px_rgba(10,13,18,0.05),inset_0_0_0_1.5px_#7f56d9] [&_svg]:text-brand-600'
+                      : 'bg-white text-slate-700 shadow-skeuo hover:bg-slate-50 [&_svg]:text-slate-400'
+                  )}
+                >
+                  <Icon className="w-4 h-4" />{label}
+                </span>
+              </label>
+            ))}
           </div>
+        </fieldset>
+
+        <AccountFields />
+
+        <FormSection>{role === 'teacher' ? 'Teacher details' : 'Student details'}</FormSection>
+        <PersonFields role={role} />
+
+        <div className="pt-1">
+          <button type="submit" disabled={busy} className={cx(btnClass('primary'), 'w-full disabled:opacity-70')}>
+            {busy && <LoaderCircle className="w-4 h-4 animate-spin" />}
+            {busy ? 'Creating account…' : 'Get started'}
+          </button>
         </div>
-      </section>
-    </>
+      </form>
+
+      <p className="mt-7 text-center text-13 text-slate-600">
+        Already have an account? <Link href="/login" className="font-semibold text-brand-700 hover:text-brand-800">Log in</Link>
+      </p>
+    </AuthLayout>
   );
 }
